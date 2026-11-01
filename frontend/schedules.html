@@ -300,7 +300,7 @@
               </td>
               <td>
                 <div>${s.farm_name || 'DHARAA Farm'}</div>
-                <div style="font-size:0.72rem; color:var(--text-muted);">${s.user_timezone || 'Asia/Kolkata'}</div>
+                <div style="font-size:0.72rem; color:var(--text-muted);">${s.farm_timezone || s.user_timezone || 'Asia/Kolkata'}</div>
               </td>
               <td><strong style="color: var(--primary-green); font-size:1.05rem;">${s.start_time}</strong></td>
               <td><strong>${s.target_moisture}%</strong></td>

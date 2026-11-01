@@ -103,7 +103,7 @@ class DHARAAScheduler:
 
         try:
             schedules = cursor.execute("""
-                SELECT s.*, f.name AS farm_name, f.user_id, u.timezone, u.username
+                SELECT s.*, f.name AS farm_name, f.timezone AS farm_timezone, f.user_id, u.timezone AS user_timezone, u.username
                 FROM schedules s
                 JOIN farms f ON s.farm_id = f.id
                 JOIN users u ON f.user_id = u.id
@@ -133,12 +133,12 @@ class DHARAAScheduler:
         target_moisture = float(sched["target_moisture"] or 45.0)
         runtime_limit = int(sched["runtime_limit"] or 300)
 
-        # 1. Resolve Farm Owner's Timezone
-        user_tz_name = sched["timezone"] or "Asia/Kolkata"
+        # 1. Resolve Farm's Configured IANA Timezone (with user fallback)
+        farm_tz_name = sched["farm_timezone"] or sched.get("user_timezone") or "Asia/Kolkata"
         try:
-            user_tz = ZoneInfo(user_tz_name)
+            user_tz = ZoneInfo(farm_tz_name)
         except Exception:
-            logger.warning(f"Invalid timezone '{user_tz_name}' for user {user_id}. Falling back to 'Asia/Kolkata'.")
+            logger.warning(f"Invalid timezone '{farm_tz_name}' for farm {farm_id}. Falling back to 'Asia/Kolkata'.")
             user_tz = ZoneInfo("Asia/Kolkata")
 
         now_user = datetime.now(user_tz)
@@ -170,7 +170,7 @@ class DHARAAScheduler:
             if diff_minutes > DEFAULT_EXECUTION_WINDOW_MINUTES:
                 # RESTART POLICY: Occurrence occurred more than 5 minutes ago (during server downtime or restart).
                 # Skip missed occurrence rather than unexpectedly starting irrigation.
-                skip_reason = f"skipped: missed occurrence during downtime (scheduled {start_time_str}, current {now_hm} {user_tz_name})"
+                skip_reason = f"skipped: missed occurrence during downtime (scheduled {start_time_str}, current {now_hm} {farm_tz_name})"
                 cursor.execute("""
                     UPDATE schedules
                     SET last_run_date = ?, last_run_at = CURRENT_TIMESTAMP, last_run_status = ?
@@ -188,7 +188,7 @@ class DHARAAScheduler:
 
         # 4. Trigger Window Reached (0 <= diff_minutes <= 5 or force_trigger):
         # Perform rigorous pre-flight safety checks before queueing pump command.
-        logger.info(f"Schedule #{sched_id} '{sched_name}' reached start time ({start_time_str} {user_tz_name}). Evaluating pre-flight safety...")
+        logger.info(f"Schedule #{sched_id} '{sched_name}' reached start time ({start_time_str} {farm_tz_name}). Evaluating pre-flight safety...")
 
         # (a) Find associated ESP32 device
         device = cursor.execute("""
@@ -385,7 +385,7 @@ class DHARAAScheduler:
         cursor = conn.cursor()
         try:
             sched = cursor.execute("""
-                SELECT s.*, f.name AS farm_name, f.user_id, u.timezone, u.username
+                SELECT s.*, f.name AS farm_name, f.timezone AS farm_timezone, f.user_id, u.timezone AS user_timezone, u.username
                 FROM schedules s
                 JOIN farms f ON s.farm_id = f.id
                 JOIN users u ON f.user_id = u.id

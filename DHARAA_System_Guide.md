@@ -124,10 +124,14 @@ The primary mission control center for daily farm operations:
 
 ### 2. My Farms (`/farms`)
 Manages all landholdings and farm properties:
-- **Farm Cards:** Shows each registered plot with its name, crop cultivar (e.g. Cotton, Wheat), location (State/District, latitude/longitude), land area (acres), soil type, and water source.
+- **Locality Hierarchy Display:** Shows the granular geographical hierarchy for each farm: *Village / Locality*, *Mandal / Taluk / Tehsil*, *District*, and *State* (e.g. `Sultan Bazar, Nampally mandal, Hyderabad, Telangana`).
+- **Coordinate-Based IANA Timezone:** Determines the nearest valid IANA time zone (e.g. `Asia/Kolkata`, `America/New_York`, `Europe/London`) directly from the farm's latitude and longitude using `timezonefinder`. Stored with the farm and used for all local schedule evaluations with full Daylight Saving Time (DST) support.
+- **Persistent Location & Offline Resilience:** Coordinates, resolved place details, and timezones are persisted in SQLite. If external geocoding services are unreachable, all data remains intact and viewable.
+- **Interactive Auto-Lookup:** Operators can enter latitude and longitude and click **"⚡ Auto-Detect Place & Timezone"** to auto-populate all locality levels and the IANA timezone instantly via OpenStreetMap Nominatim reverse geocoding.
+- **Manual Override & Editing:** The **"Edit"** button allows operators to modify coordinates, edit any missing or incorrect locality levels, and manually correct the IANA timezone if required.
 - **"Select on Dashboard" Button:** Switches the active farm on the main dashboard with one click.
 - **"Archive" Button:** Soft-deletes a farm without corrupting historical telemetry records.
-- **"Register New Farm" Modal:** Two-column clean form allowing the operator to input plot name, coordinates, land area, and select from common soil taxonomies (Black Cotton, Loamy, Sandy Loam, Alluvial, Red Soil). Automatically provisions a paired ESP32 device node in the database.
+- **"Register New Farm" Modal:** Multi-field dialog allowing the operator to input plot name, coordinates, locality hierarchy, IANA timezone, land area, and soil taxonomy. Automatically provisions a paired ESP32 device node in the database.
 
 ---
 

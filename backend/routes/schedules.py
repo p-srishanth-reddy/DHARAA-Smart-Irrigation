@@ -13,7 +13,7 @@ def list_create_schedules():
     if request.method == "GET":
         farm_id = request.args.get("farm_id", type=int)
         query = """
-            SELECT s.*, f.name as farm_name, u.timezone as user_timezone
+            SELECT s.*, f.name as farm_name, f.timezone as farm_timezone, u.timezone as user_timezone
             FROM schedules s
             JOIN farms f ON s.farm_id = f.id
             JOIN users u ON f.user_id = u.id

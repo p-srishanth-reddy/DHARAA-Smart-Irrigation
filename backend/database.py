@@ -31,6 +31,11 @@ def init_db():
         user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
         name TEXT NOT NULL,
         state_district TEXT,
+        village_locality TEXT,
+        mandal_taluk TEXT,
+        district TEXT,
+        state TEXT,
+        timezone TEXT DEFAULT 'Asia/Kolkata',
         lat REAL,
         lon REAL,
         area REAL DEFAULT 1.0,
@@ -121,6 +126,30 @@ def init_db():
     if "last_run_status" not in sched_cols:
         cursor.execute("ALTER TABLE schedules ADD COLUMN last_run_status TEXT")
 
+    # Ensure farms table has location hierarchy and timezone columns
+    farm_cols = [c[1] for c in cursor.execute("PRAGMA table_info(farms)").fetchall()]
+    if "village_locality" not in farm_cols:
+        cursor.execute("ALTER TABLE farms ADD COLUMN village_locality TEXT")
+    if "mandal_taluk" not in farm_cols:
+        cursor.execute("ALTER TABLE farms ADD COLUMN mandal_taluk TEXT")
+    if "district" not in farm_cols:
+        cursor.execute("ALTER TABLE farms ADD COLUMN district TEXT")
+    if "state" not in farm_cols:
+        cursor.execute("ALTER TABLE farms ADD COLUMN state TEXT")
+    if "timezone" not in farm_cols:
+        cursor.execute("ALTER TABLE farms ADD COLUMN timezone TEXT DEFAULT 'Asia/Kolkata'")
+
+    # Backfill default values for existing farms missing location breakdown
+    cursor.execute("""
+        UPDATE farms
+        SET village_locality = COALESCE(village_locality, 'Sultan Bazar'),
+            mandal_taluk = COALESCE(mandal_taluk, 'Nampally mandal'),
+            district = COALESCE(district, 'Hyderabad'),
+            state = COALESCE(state, 'Telangana'),
+            timezone = COALESCE(timezone, 'Asia/Kolkata')
+        WHERE id = 1 AND (village_locality IS NULL OR timezone IS NULL)
+    """)
+
     # Check if default user exists, if not seed initial demo data
     user = cursor.execute("SELECT id FROM users WHERE username = 'farmer'").fetchone()
     if not user:
@@ -133,8 +162,8 @@ def init_db():
 
         # Seed sample farm (Hyderabad / Telangana coordinates as baseline)
         cursor.execute("""
-            INSERT INTO farms (user_id, name, state_district, lat, lon, area, area_unit, crop, soil_type, season, water_source)
-            VALUES (?, 'DHARAA Experimental Farm', 'Hyderabad, Telangana', 17.3850, 78.4867, 2.5, 'acre', 'Cotton', 'Black Cotton Soil', 'Kharif', 'Borewell')
+            INSERT INTO farms (user_id, name, state_district, village_locality, mandal_taluk, district, state, timezone, lat, lon, area, area_unit, crop, soil_type, season, water_source)
+            VALUES (?, 'DHARAA Experimental Farm', 'Hyderabad, Telangana', 'Sultan Bazar', 'Nampally mandal', 'Hyderabad', 'Telangana', 'Asia/Kolkata', 17.3850, 78.4867, 2.5, 'acre', 'Cotton', 'Black Cotton Soil', 'Kharif', 'Borewell')
         """, (user_id,))
         farm_id = cursor.lastrowid
 

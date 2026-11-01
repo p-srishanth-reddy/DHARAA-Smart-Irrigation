@@ -152,42 +152,85 @@
 
   <!-- Add Farm Modal -->
   <div id="modal-add-farm" class="modal-backdrop">
-    <div class="modal-content">
+    <div class="modal-content" style="max-width: 650px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color);">
         <h3 style="font-size: 1.15rem; font-weight: 600; color: var(--text-primary);">Register New Farm Plot</h3>
         <button id="btn-close-modal" style="background:transparent; border:none; color:var(--text-secondary); font-size:1.3rem; cursor:pointer;" aria-label="Close dialog">&times;</button>
       </div>
 
       <form id="form-new-farm">
-        <div class="form-group">
-          <label class="form-label">Farm Plot Name</label>
-          <input id="farm-name" type="text" class="form-control" placeholder="e.g. North Orchard" required>
-        </div>
         <div class="grid-2" style="gap:12px;">
           <div class="form-group">
-            <label class="form-label">State / District</label>
-            <input id="farm-district" type="text" class="form-control" value="Telangana, India" required>
+            <label class="form-label">Farm Plot Name</label>
+            <input id="farm-name" type="text" class="form-control" placeholder="e.g. DHARAA Experimental Farm" required>
           </div>
           <div class="form-group">
             <label class="form-label">Active Crop</label>
             <input id="farm-crop" type="text" class="form-control" value="Cotton" required>
           </div>
         </div>
+
+        <!-- Coordinates & Auto Lookup Bar -->
+        <div style="background: var(--pale-green); border: 1px solid #D5E8D8; border-radius: var(--radius-md); padding: 12px; margin-bottom: 16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+            <span style="font-size: 0.82rem; font-weight: 600; color: var(--primary-dark-green);">
+              📍 Geographic Coordinates &amp; Automated Lookup
+            </span>
+            <button type="button" id="btn-auto-lookup-new" class="btn btn-outline btn-sm" style="background:#fff; color:var(--primary-dark-green); border-color:#A7D7B5;" title="Look up locality hierarchy and IANA timezone">
+              ⚡ Auto-Detect Place &amp; Timezone
+            </button>
+          </div>
+          <div class="grid-2" style="gap:12px;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Latitude</label>
+              <input id="farm-lat" type="number" step="0.0001" class="form-control" value="17.3850" required>
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Longitude</label>
+              <input id="farm-lon" type="number" step="0.0001" class="form-control" value="78.4867" required>
+            </div>
+          </div>
+        </div>
+
+        <!-- Locality Hierarchy Fields -->
+        <div style="font-size: 0.82rem; font-weight: 600; color: var(--text-primary); margin-bottom: 6px;">
+          Locality Hierarchy (Auto-detected or editable)
+        </div>
         <div class="grid-2" style="gap:12px;">
           <div class="form-group">
-            <label class="form-label">Latitude</label>
-            <input id="farm-lat" type="number" step="0.0001" class="form-control" value="17.3850" required>
+            <label class="form-label">Village / Locality</label>
+            <input id="farm-village" type="text" class="form-control" placeholder="e.g. Sultan Bazar">
           </div>
           <div class="form-group">
-            <label class="form-label">Longitude</label>
-            <input id="farm-lon" type="number" step="0.0001" class="form-control" value="78.4867" required>
+            <label class="form-label">Mandal / Taluk / Tehsil</label>
+            <input id="farm-mandal" type="text" class="form-control" placeholder="e.g. Nampally mandal">
           </div>
         </div>
         <div class="grid-2" style="gap:12px;">
           <div class="form-group">
+            <label class="form-label">District</label>
+            <input id="farm-district" type="text" class="form-control" placeholder="e.g. Hyderabad">
+          </div>
+          <div class="form-group">
+            <label class="form-label">State</label>
+            <input id="farm-state" type="text" class="form-control" placeholder="e.g. Telangana">
+          </div>
+        </div>
+
+        <!-- Timezone & Agronomy -->
+        <div class="grid-2" style="gap:12px;">
+          <div class="form-group">
+            <label class="form-label">IANA Time Zone</label>
+            <input id="farm-timezone" type="text" class="form-control" value="Asia/Kolkata" placeholder="e.g. Asia/Kolkata" required>
+            <small style="font-size:0.7rem; color:var(--text-muted);">Resolved from coordinates. Handles DST automatically.</small>
+          </div>
+          <div class="form-group">
             <label class="form-label">Land Area (Acres)</label>
             <input id="farm-area" type="number" step="0.1" class="form-control" value="2.5" required>
           </div>
+        </div>
+
+        <div class="grid-2" style="gap:12px;">
           <div class="form-group">
             <label class="form-label">Soil Taxonomy</label>
             <select id="farm-soil" class="form-control">
@@ -198,10 +241,110 @@
               <option value="Red Soil">Red Soil</option>
             </select>
           </div>
+          <div class="form-group">
+            <label class="form-label">Water Source</label>
+            <select id="farm-water" class="form-control">
+              <option value="Borewell">Borewell</option>
+              <option value="Canal">Canal</option>
+              <option value="Drip Irrigation Line">Drip Irrigation Line</option>
+              <option value="Farm Pond">Farm Pond</option>
+              <option value="River / Stream">River / Stream</option>
+            </select>
+          </div>
         </div>
+
         <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
           <button type="button" id="btn-cancel-modal" class="btn btn-outline btn-sm">Cancel</button>
-          <button type="submit" class="btn btn-primary btn-sm">Save & Register Node</button>
+          <button type="submit" class="btn btn-primary btn-sm">Save &amp; Register Node</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Farm Modal -->
+  <div id="modal-edit-farm" class="modal-backdrop">
+    <div class="modal-content" style="max-width: 650px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color);">
+        <h3 style="font-size: 1.15rem; font-weight: 600; color: var(--text-primary);">Edit Farm Location &amp; Time Zone</h3>
+        <button id="btn-close-edit-modal" style="background:transparent; border:none; color:var(--text-secondary); font-size:1.3rem; cursor:pointer;" aria-label="Close dialog">&times;</button>
+      </div>
+
+      <form id="form-edit-farm">
+        <input type="hidden" id="edit-farm-id">
+        <div class="grid-2" style="gap:12px;">
+          <div class="form-group">
+            <label class="form-label">Farm Plot Name</label>
+            <input id="edit-farm-name" type="text" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Active Crop</label>
+            <input id="edit-farm-crop" type="text" class="form-control" required>
+          </div>
+        </div>
+
+        <!-- Coordinates & Auto Lookup Bar -->
+        <div style="background: var(--pale-green); border: 1px solid #D5E8D8; border-radius: var(--radius-md); padding: 12px; margin-bottom: 16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+            <span style="font-size: 0.82rem; font-weight: 600; color: var(--primary-dark-green);">
+              📍 Geographic Coordinates
+            </span>
+            <button type="button" id="btn-auto-lookup-edit" class="btn btn-outline btn-sm" style="background:#fff; color:var(--primary-dark-green); border-color:#A7D7B5;">
+              ⚡ Recalculate Place &amp; Timezone
+            </button>
+          </div>
+          <div class="grid-2" style="gap:12px;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Latitude</label>
+              <input id="edit-farm-lat" type="number" step="0.0001" class="form-control" required>
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Longitude</label>
+              <input id="edit-farm-lon" type="number" step="0.0001" class="form-control" required>
+            </div>
+          </div>
+        </div>
+
+        <!-- Locality Hierarchy Fields -->
+        <div style="font-size: 0.82rem; font-weight: 600; color: var(--text-primary); margin-bottom: 6px;">
+          Locality Hierarchy
+        </div>
+        <div class="grid-2" style="gap:12px;">
+          <div class="form-group">
+            <label class="form-label">Village / Locality</label>
+            <input id="edit-farm-village" type="text" class="form-control">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Mandal / Taluk / Tehsil</label>
+            <input id="edit-farm-mandal" type="text" class="form-control">
+          </div>
+        </div>
+        <div class="grid-2" style="gap:12px;">
+          <div class="form-group">
+            <label class="form-label">District</label>
+            <input id="edit-farm-district" type="text" class="form-control">
+          </div>
+          <div class="form-group">
+            <label class="form-label">State</label>
+            <input id="edit-farm-state" type="text" class="form-control">
+          </div>
+        </div>
+
+        <!-- Timezone & Agronomy -->
+        <div class="grid-2" style="gap:12px;">
+          <div class="form-group">
+            <label class="form-label">IANA Time Zone (Editable)</label>
+            <input id="edit-farm-timezone" type="text" class="form-control" required>
+            <small style="font-size:0.7rem; color:var(--text-muted);">Operator can correct manually if lookup differs.</small>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Land Area (Acres)</label>
+            <input id="edit-farm-area" type="number" step="0.1" class="form-control" required>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+          <button type="button" id="btn-cancel-edit-modal" class="btn btn-outline btn-sm">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm">Update Farm</button>
         </div>
       </form>
     </div>
@@ -209,57 +352,167 @@
 
   <script src="/js/api.js"></script>
   <script>
+    let loadedFarmsList = [];
+
     async function loadFarms() {
       try {
         const farms = await API.get('/api/farms');
+        loadedFarmsList = farms;
         const grid = document.getElementById('farms-grid');
-        if (farms.length === 0) {
+        if (!farms || farms.length === 0) {
           grid.innerHTML = `<div class="card" style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 40px;">No farms registered yet. Click "Add New Farm" to get started.</div>`;
           return;
         }
 
-        grid.innerHTML = farms.map(f => `
-          <div class="card">
-            <div class="card-header">
-              <span class="card-title" style="color: var(--primary-dark-green);">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
-                ${f.crop} Plot
-              </span>
-              <span class="badge-state badge-live">Active</span>
-            </div>
+        grid.innerHTML = farms.map(f => {
+          const locHierarchy = f.location_hierarchy || f.state_district || 'Location not specified';
+          const tz = f.timezone || 'Asia/Kolkata';
 
-            <div style="font-size: 1.15rem; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">
-              ${f.name}
-            </div>
-            <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 14px;">
-              📍 ${f.state_district || 'India'} (${f.lat}° N, ${f.lon}° E)
-            </div>
+          return `
+            <div class="card">
+              <div class="card-header">
+                <span class="card-title" style="color: var(--primary-dark-green);">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
+                  ${f.crop} Plot
+                </span>
+                <span class="badge-state badge-live">Active</span>
+              </div>
 
-            <div style="background: #FAFAFA; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px 14px; font-size: 0.82rem; line-height: 1.8;">
-              <div style="display:flex; justify-content:space-between;">
-                <span style="color: var(--text-secondary);">Area:</span>
-                <strong>${f.area} ${f.area_unit}</strong>
+              <div style="font-size: 1.15rem; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">
+                ${f.name}
               </div>
-              <div style="display:flex; justify-content:space-between;">
-                <span style="color: var(--text-secondary);">Soil:</span>
-                <strong>${f.soil_type}</strong>
-              </div>
-              <div style="display:flex; justify-content:space-between;">
-                <span style="color: var(--text-secondary);">Water Source:</span>
-                <strong>${f.water_source}</strong>
-              </div>
-            </div>
 
-            <div style="margin-top: 16px; display:flex; justify-content:space-between; align-items:center;">
-              <a href="/?farm_id=${f.id}" class="btn btn-primary btn-sm">Select on Dashboard</a>
-              <button onclick="archiveFarm(${f.id})" class="btn btn-outline btn-sm" style="color: var(--danger); border-color: #FECACA;">Archive</button>
+              <!-- Locality Hierarchy Display -->
+              <div style="font-size: 0.83rem; color: var(--primary-dark-green); font-weight: 500; margin-bottom: 6px;">
+                📍 ${locHierarchy}
+              </div>
+
+              <!-- Coordinates and Timezone Badge -->
+              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 14px;">
+                <span>🌐 ${f.lat.toFixed(4)}° N, ${f.lon.toFixed(4)}° E</span>
+                <span class="badge-state" style="background:#EEF2FF; color:#4338CA; border:1px solid #C7D2FE; font-size:0.75rem;" title="Resolved IANA Time Zone">
+                  🕒 ${tz}
+                </span>
+              </div>
+
+              <!-- Hierarchy Breakdown Box -->
+              <div style="background: #FAFAFA; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px 14px; font-size: 0.8rem; line-height: 1.8;">
+                <div style="display:flex; justify-content:space-between;">
+                  <span style="color: var(--text-secondary);">Village / Locality:</span>
+                  <strong>${f.village_locality || '—'}</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                  <span style="color: var(--text-secondary);">Mandal / Taluk:</span>
+                  <strong>${f.mandal_taluk || '—'}</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                  <span style="color: var(--text-secondary);">District &amp; State:</span>
+                  <strong>${f.district ? f.district + ', ' : ''}${f.state || '—'}</strong>
+                </div>
+                <div style="border-top:1px dashed var(--border-color); margin: 6px 0;"></div>
+                <div style="display:flex; justify-content:space-between;">
+                  <span style="color: var(--text-secondary);">Area:</span>
+                  <strong>${f.area} ${f.area_unit}</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                  <span style="color: var(--text-secondary);">Soil &amp; Water:</span>
+                  <strong>${f.soil_type} (${f.water_source})</strong>
+                </div>
+              </div>
+
+              <div style="margin-top: 16px; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
+                <a href="/?farm_id=${f.id}" class="btn btn-primary btn-sm">Select on Dashboard</a>
+                <div style="display:flex; gap:6px;">
+                  <button onclick="openEditFarm(${f.id})" class="btn btn-outline btn-sm" title="Edit locality hierarchy or correct timezone">Edit</button>
+                  <button onclick="archiveFarm(${f.id})" class="btn btn-outline btn-sm" style="color: var(--danger); border-color: #FECACA;">Archive</button>
+                </div>
+              </div>
             </div>
-          </div>
-        `).join('');
+          `;
+        }).join('');
       } catch (err) {
         showToast("Error loading farms: " + err.message, "error");
       }
     }
+
+    // Coordinates auto-lookup helper
+    async function performCoordinatesLookup(latInputId, lonInputId, villageId, mandalId, districtId, stateId, tzId) {
+      const lat = parseFloat(document.getElementById(latInputId).value);
+      const lon = parseFloat(document.getElementById(lonInputId).value);
+      if (isNaN(lat) || isNaN(lon)) {
+        showToast("Please enter valid latitude and longitude numbers first.", "warning");
+        return;
+      }
+      try {
+        showToast("Resolving location hierarchy & IANA timezone...", "info");
+        const res = await API.post('/api/farms/lookup-coordinates', { lat, lon });
+        if (res.timezone) document.getElementById(tzId).value = res.timezone;
+        if (res.village_locality) document.getElementById(villageId).value = res.village_locality;
+        if (res.mandal_taluk) document.getElementById(mandalId).value = res.mandal_taluk;
+        if (res.district) document.getElementById(districtId).value = res.district;
+        if (res.state) document.getElementById(stateId).value = res.state;
+        showToast(`Place resolved: ${res.formatted_address || res.timezone}`, "success");
+      } catch (err) {
+        showToast("Lookup failed: " + err.message, "warning");
+      }
+    }
+
+    document.getElementById('btn-auto-lookup-new').addEventListener('click', () => {
+      performCoordinatesLookup('farm-lat', 'farm-lon', 'farm-village', 'farm-mandal', 'farm-district', 'farm-state', 'farm-timezone');
+    });
+
+    document.getElementById('btn-auto-lookup-edit').addEventListener('click', () => {
+      performCoordinatesLookup('edit-farm-lat', 'edit-farm-lon', 'edit-farm-village', 'edit-farm-mandal', 'edit-farm-district', 'edit-farm-state', 'edit-farm-timezone');
+    });
+
+    // Edit modal handler
+    function openEditFarm(farmId) {
+      const f = loadedFarmsList.find(x => x.id === farmId);
+      if (!f) return;
+      document.getElementById('edit-farm-id').value = f.id;
+      document.getElementById('edit-farm-name').value = f.name;
+      document.getElementById('edit-farm-crop').value = f.crop;
+      document.getElementById('edit-farm-lat').value = f.lat;
+      document.getElementById('edit-farm-lon').value = f.lon;
+      document.getElementById('edit-farm-village').value = f.village_locality || '';
+      document.getElementById('edit-farm-mandal').value = f.mandal_taluk || '';
+      document.getElementById('edit-farm-district').value = f.district || '';
+      document.getElementById('edit-farm-state').value = f.state || '';
+      document.getElementById('edit-farm-timezone').value = f.timezone || 'Asia/Kolkata';
+      document.getElementById('edit-farm-area').value = f.area;
+      document.getElementById('modal-edit-farm').classList.add('show');
+    }
+
+    document.getElementById('btn-close-edit-modal').addEventListener('click', () => {
+      document.getElementById('modal-edit-farm').classList.remove('show');
+    });
+    document.getElementById('btn-cancel-edit-modal').addEventListener('click', () => {
+      document.getElementById('modal-edit-farm').classList.remove('show');
+    });
+
+    document.getElementById('form-edit-farm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('edit-farm-id').value;
+      try {
+        await API.put(`/api/farms/${id}`, {
+          name: document.getElementById('edit-farm-name').value,
+          crop: document.getElementById('edit-farm-crop').value,
+          lat: parseFloat(document.getElementById('edit-farm-lat').value),
+          lon: parseFloat(document.getElementById('edit-farm-lon').value),
+          village_locality: document.getElementById('edit-farm-village').value,
+          mandal_taluk: document.getElementById('edit-farm-mandal').value,
+          district: document.getElementById('edit-farm-district').value,
+          state: document.getElementById('edit-farm-state').value,
+          timezone: document.getElementById('edit-farm-timezone').value,
+          area: parseFloat(document.getElementById('edit-farm-area').value)
+        });
+        document.getElementById('modal-edit-farm').classList.remove('show');
+        showToast("Farm location and timezone updated successfully", "success");
+        loadFarms();
+      } catch (err) {
+        showToast("Update failed: " + err.message, "error");
+      }
+    });
 
     async function archiveFarm(id) {
       if (confirm("Are you sure you want to archive this farm profile?")) {
@@ -284,15 +537,20 @@
       try {
         await API.post('/api/farms', {
           name: document.getElementById('farm-name').value,
-          state_district: document.getElementById('farm-district').value,
           crop: document.getElementById('farm-crop').value,
           lat: parseFloat(document.getElementById('farm-lat').value),
           lon: parseFloat(document.getElementById('farm-lon').value),
+          village_locality: document.getElementById('farm-village').value,
+          mandal_taluk: document.getElementById('farm-mandal').value,
+          district: document.getElementById('farm-district').value,
+          state: document.getElementById('farm-state').value,
+          timezone: document.getElementById('farm-timezone').value,
           area: parseFloat(document.getElementById('farm-area').value),
-          soil_type: document.getElementById('farm-soil').value
+          soil_type: document.getElementById('farm-soil').value,
+          water_source: document.getElementById('farm-water').value
         });
         modal.classList.remove('show');
-        showToast("Farm and IoT node created successfully", "success");
+        showToast("Farm registered with resolved location & timezone", "success");
         loadFarms();
       } catch (err) {
         showToast("Creation failed: " + err.message, "error");

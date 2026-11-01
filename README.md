@@ -59,6 +59,13 @@ The simulator generates live capacitive moisture readings, simulates soil drying
 3. Upload all files from `esp32_firmware/` (`config.py`, `sensors.py`, `safety.py`, `wifi_manager.py`, `api_client.py`, `irrigation.py`, `main.py`) to the ESP32 root directory using Thonny, `mpremote`, or `ampy`.
 4. Power on the ESP32.
 
+## 🗺️ Farm Locality Hierarchy & Coordinate-Based Timezone
+Each farm in DHARAA is geo-aware and resolves its administrative hierarchy and exact IANA timezone from its coordinates:
+- **Locality Breakdown:** Displays *Village/Locality*, *Mandal/Taluk*, *District*, and *State* (e.g., `Sultan Bazar, Nampally mandal, Hyderabad, Telangana`).
+- **Coordinate-Based IANA Timezone:** Resolved using `timezonefinder` from latitude and longitude. Stored in `farms.timezone` and natively supports daylight-saving time (DST) worldwide.
+- **Offline Resilience:** All location details and coordinates are stored with the farm in SQLite, remaining available when external geocoding APIs are offline.
+- **Auto-Detection & Operator Manual Correction:** Coordinates can be auto-looked up via Nominatim (`POST /api/farms/lookup-coordinates`), and operators can manually edit any place details or correct the IANA timezone in the web interface (`/farms`).
+
 ---
 
 ## 🕒 Automatic Schedule Execution Service
