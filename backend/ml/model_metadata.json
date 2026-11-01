@@ -1,0 +1,42 @@
+{
+  "model_type": "RandomForestClassifier",
+  "n_estimators": 100,
+  "features": [
+    "N",
+    "P",
+    "K",
+    "temperature",
+    "humidity",
+    "ph",
+    "rainfall"
+  ],
+  "classes": [
+    "Apple",
+    "Banana",
+    "Blackgram",
+    "Chickpea",
+    "Coconut",
+    "Coffee",
+    "Cotton",
+    "Grapes",
+    "Jute",
+    "Kidneybeans",
+    "Lentil",
+    "Maize",
+    "Mango",
+    "Mothbeans",
+    "Mungbean",
+    "Muskmelon",
+    "Orange",
+    "Papaya",
+    "Pigeonpeas",
+    "Pomegranate",
+    "Rice",
+    "Watermelon"
+  ],
+  "test_accuracy": 0.95,
+  "dataset_source": "Mendeley Crop Recommendation Agronomic Profiles",
+  "training_samples": 1760,
+  "test_samples": 440,
+  "limitations": "Model trained on soil nutrients and climatic parameters. Live telemetry and field microclimate may vary."
+}

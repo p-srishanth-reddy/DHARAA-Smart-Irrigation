@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather Forecast — DHARAA Smart Irrigation</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand-container">
+      <div class="brand-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5">
+          <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-title">DHARAA</div>
+        <div class="brand-subtitle">Smart Irrigation</div>
+      </div>
+    </div>
+    <ul class="nav-menu">
+      <li><a href="/" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg><span class="nav-text">Dashboard</span></a></li>
+      <li><a href="/farms" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span class="nav-text">My Farms</span></a></li>
+      <li><a href="/schedules" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><span class="nav-text">Schedules</span></a></li>
+      <li><a href="/weather-view" class="nav-link active"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg><span class="nav-text">Weather Forecast</span></a></li>
+      <li><a href="/advisor-view" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg><span class="nav-text">AI Crop Advisor</span></a></li>
+      <li><a href="/analytics-view" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg><span class="nav-text">Analytics</span></a></li>
+      <li><a href="/profile-view" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><span class="nav-text">Profile & Node</span></a></li>
+    </ul>
+  </aside>
+
+  <!-- Main Wrapper -->
+  <div class="main-wrapper">
+    <header class="topbar">
+      <div class="topbar-left">
+        <h2 style="font-size: 1.15rem; font-weight: 700;">Open-Meteo Weather Integration</h2>
+      </div>
+      <div class="topbar-right">
+        <span id="weather-retrieval-pill" class="device-status-pill online">
+          <span class="pulse-dot"></span>
+          <span id="weather-retrieval-text">Fetching Forecast...</span>
+        </span>
+      </div>
+    </header>
+
+    <main class="content-container">
+      <section class="page-header">
+        <div>
+          <h1 class="page-title">Farm Weather & Precipitation Outlook</h1>
+          <p class="page-subtitle">Coordinates: <span id="weather-coords">17.3850° N, 78.4867° E</span> | Attribution: Open-Meteo API</p>
+        </div>
+        <button id="btn-refresh-weather" class="btn btn-outline">🔄 Refresh Forecast</button>
+      </section>
+
+      <!-- Current Weather Cards -->
+      <section class="grid-4">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Ambient Temp</span>
+            <span class="badge-state badge-live">Open-Meteo</span>
+          </div>
+          <div id="w-temp" class="card-value">--<span class="card-unit">°C</span></div>
+          <div class="card-footer"><span>Forecast 2m</span></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Air Humidity</span>
+            <span class="badge-state badge-live">Live</span>
+          </div>
+          <div id="w-humidity" class="card-value">--<span class="card-unit">%</span></div>
+          <div class="card-footer"><span>Relative Humidity</span></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Precipitation Rate</span>
+            <span class="badge-state badge-live">Rain</span>
+          </div>
+          <div id="w-rain" class="card-value">0.0<span class="card-unit">mm</span></div>
+          <div class="card-footer"><span>Current rainfall rate</span></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Wind Velocity</span>
+            <span class="badge-state badge-live">10m Speed</span>
+          </div>
+          <div id="w-wind" class="card-value">--<span class="card-unit">km/h</span></div>
+          <div class="card-footer"><span>Affects evapotranspiration</span></div>
+        </div>
+      </section>
+
+      <!-- Hourly Forecast Chart -->
+      <section class="card">
+        <div class="card-header">
+          <span class="card-title">24-Hour Temperature & Rain Probability Horizon</span>
+          <span class="badge-state badge-live">Next 24 Hours</span>
+        </div>
+        <div style="height: 320px; position: relative;">
+          <canvas id="chart-weather-forecast"></canvas>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/charts.js"></script>
+  <script>
+    let weatherChart = null;
+
+    async function loadWeather() {
+      try {
+        const data = await API.get('/api/weather?farm_id=1');
+        document.getElementById('weather-coords').textContent = `${data.latitude}° N, ${data.longitude}° E`;
+
+        const pill = document.getElementById('weather-retrieval-pill');
+        const pillText = document.getElementById('weather-retrieval-text');
+        if (data.is_stale) {
+          pill.className = 'device-status-pill stale';
+          pillText.textContent = `Cached Forecast (${data.cache_age_seconds}s ago)`;
+        } else {
+          pill.className = 'device-status-pill online';
+          pillText.textContent = `Retrieved: ${data.retrieved_at_iso}`;
+        }
+
+        const curr = data.current || {};
+        document.getElementById('w-temp').innerHTML = `${curr.temperature || '--'}<span class="card-unit">°C</span>`;
+        document.getElementById('w-humidity').innerHTML = `${curr.humidity || '--'}<span class="card-unit">%</span>`;
+        document.getElementById('w-rain').innerHTML = `${curr.precipitation || '0.0'}<span class="card-unit">mm</span>`;
+        document.getElementById('w-wind').innerHTML = `${curr.wind_speed || '--'}<span class="card-unit">km/h</span>`;
+
+        // Render chart
+        if (data.hourly) {
+          if (weatherChart) weatherChart.destroy();
+          weatherChart = createWeatherForecastChart(
+            'chart-weather-forecast',
+            data.hourly.time,
+            data.hourly.temperature,
+            data.hourly.precipitation_probability
+          );
+        }
+      } catch (err) {
+        showToast("Weather fetch failed: " + err.message, "error");
+      }
+    }
+
+    document.getElementById('btn-refresh-weather').addEventListener('click', loadWeather);
+    document.addEventListener('DOMContentLoaded', loadWeather);
+  </script>
+</body>
+</html>

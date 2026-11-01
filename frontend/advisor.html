@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Crop & Irrigation Advisor — DHARAA</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand-container">
+      <div class="brand-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5">
+          <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-title">DHARAA</div>
+        <div class="brand-subtitle">Smart Irrigation</div>
+      </div>
+    </div>
+    <ul class="nav-menu">
+      <li><a href="/" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg><span class="nav-text">Dashboard</span></a></li>
+      <li><a href="/farms" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span class="nav-text">My Farms</span></a></li>
+      <li><a href="/schedules" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><span class="nav-text">Schedules</span></a></li>
+      <li><a href="/weather-view" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg><span class="nav-text">Weather Forecast</span></a></li>
+      <li><a href="/advisor-view" class="nav-link active"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg><span class="nav-text">AI Crop Advisor</span></a></li>
+      <li><a href="/analytics-view" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg><span class="nav-text">Analytics</span></a></li>
+      <li><a href="/profile-view" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><span class="nav-text">Profile & Node</span></a></li>
+    </ul>
+  </aside>
+
+  <!-- Main Wrapper -->
+  <div class="main-wrapper">
+    <header class="topbar">
+      <div class="topbar-left">
+        <h2 style="font-size: 1.15rem; font-weight: 700;">AI Crop Classification & Irrigation Advisor</h2>
+      </div>
+      <div class="topbar-right">
+        <span class="device-status-pill online">
+          <span class="pulse-dot"></span>
+          <span>Random Forest ML (95.0% Acc)</span>
+        </span>
+      </div>
+    </header>
+
+    <main class="content-container">
+      <section class="page-header">
+        <div>
+          <h1 class="page-title">Agronomic Decision Support System</h1>
+          <p class="page-subtitle">Trained on Mendeley Crop Recommendation Agronomic Profiles & FAO-56 Evapotranspiration Rules</p>
+        </div>
+      </section>
+
+      <!-- Grid 2: Crop Form & Inference Output -->
+      <section class="grid-2">
+        <!-- Input Form -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Soil Macronutrients & Climate Parameters</span>
+            <span class="badge-state badge-live">Model Inputs</span>
+          </div>
+
+          <div style="margin-bottom: 16px;">
+            <span style="font-size: 0.8rem; color: var(--text-secondary);">Quick Presets:</span>
+            <div style="display:flex; gap:8px; margin-top:6px; flex-wrap:wrap;">
+              <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:0.75rem;" onclick="setPreset('cotton')">Cotton (Semi-arid)</button>
+              <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:0.75rem;" onclick="setPreset('rice')">Rice (Wetland)</button>
+              <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:0.75rem;" onclick="setPreset('chickpea')">Chickpea (Dryland)</button>
+              <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:0.75rem;" onclick="setPreset('maize')">Maize (Temperate)</button>
+            </div>
+          </div>
+
+          <form id="form-crop-advisory">
+            <div class="grid-3" style="gap: 12px;">
+              <div class="form-group">
+                <label class="form-label">Nitrogen (N) <span style="font-size:0.75rem; color:var(--text-muted)">mg/kg</span></label>
+                <input id="input-n" type="number" class="form-control" value="117" min="0" max="140" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Phosphorus (P) <span style="font-size:0.75rem; color:var(--text-muted)">mg/kg</span></label>
+                <input id="input-p" type="number" class="form-control" value="46" min="5" max="145" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Potassium (K) <span style="font-size:0.75rem; color:var(--text-muted)">mg/kg</span></label>
+                <input id="input-k" type="number" class="form-control" value="19" min="5" max="205" required>
+              </div>
+            </div>
+
+            <div class="grid-2" style="gap: 12px;">
+              <div class="form-group">
+                <label class="form-label">Temperature (°C)</label>
+                <input id="input-temp" type="number" step="0.1" class="form-control" value="24.0" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Humidity (% RH)</label>
+                <input id="input-humid" type="number" step="0.1" class="form-control" value="80.0" required>
+              </div>
+            </div>
+
+            <div class="grid-2" style="gap: 12px;">
+              <div class="form-group">
+                <label class="form-label">Soil pH (0 - 14)</label>
+                <input id="input-ph" type="number" step="0.1" class="form-control" value="6.9" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Annual Rainfall (mm)</label>
+                <input id="input-rain" type="number" step="0.1" class="form-control" value="80.0" required>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
+              🚀 Run Random Forest Crop Inference
+            </button>
+          </form>
+        </div>
+
+        <!-- ML Inference Output -->
+        <div class="card" style="display:flex; flex-direction:column; justify-content:space-between;">
+          <div>
+            <div class="card-header">
+              <span class="card-title">Recommendation Results</span>
+              <span id="pred-badge" class="badge-state badge-live">Ready</span>
+            </div>
+
+            <div style="background: rgba(0,0,0,0.35); border-radius: var(--radius-md); padding: 24px; text-align: center; border: 1px solid var(--border-subtle); margin-top: 10px;">
+              <div style="font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.06em;">Top Optimal Crop Recommendation</div>
+              <div id="recommended-crop-name" style="font-size: 2.6rem; font-weight: 800; color: #34d399; margin: 10px 0; text-shadow: 0 0 20px rgba(52, 211, 153, 0.3);">
+                Cotton
+              </div>
+              <div style="font-size: 0.95rem; color: var(--text-secondary);">
+                Model Confidence: <strong id="model-conf" style="color: #ffffff;">94.2%</strong>
+              </div>
+            </div>
+
+            <!-- Alternative Recommendations -->
+            <div style="margin-top: 20px;">
+              <div style="font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 10px;">
+                Runner-Up Crop Compatibility:
+              </div>
+              <div id="runner-ups-list" style="display:flex; flex-direction:column; gap:8px;">
+                <div style="display:flex; justify-content:space-between; padding:8px 12px; background:rgba(255,255,255,0.03); border-radius:6px;">
+                  <span>Jute</span>
+                  <span style="color:#38bdf8; font-weight:600;">4.8%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: var(--radius-sm); padding: 12px; margin-top: 20px; font-size: 0.78rem; color: #fbbf24; line-height: 1.5;">
+            <strong>Mandatory Agronomic Notice:</strong> This prediction is based on statistical macronutrient boundaries. It does not replace comprehensive soil pathology tests, water salinity checks, or market price assessments.
+          </div>
+        </div>
+      </section>
+
+      <!-- Agronomic Irrigation Guidance Section -->
+      <section class="card">
+        <div class="card-header">
+          <span class="card-title">Real-Time Soil Hydration & Evapotranspiration Advisory</span>
+          <span id="irrigation-urgency-badge" class="badge-state badge-live">LOW URGENCY</span>
+        </div>
+
+        <div class="grid-3" style="margin-top: 10px;">
+          <div style="background: rgba(0,0,0,0.3); padding: 18px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+            <div style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase;">Headline Status</div>
+            <div id="advisor-headline" style="font-size: 1.15rem; font-weight: 700; color: #ffffff; margin-top: 6px;">
+              Optimal Soil Hydration
+            </div>
+          </div>
+
+          <div style="background: rgba(0,0,0,0.3); padding: 18px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+            <div style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase;">Recommended Runtime</div>
+            <div id="advisor-runtime" style="font-size: 1.15rem; font-weight: 700; color: #34d399; margin-top: 6px;">
+              0 minutes (No cycle needed)
+            </div>
+          </div>
+
+          <div style="background: rgba(0,0,0,0.3); padding: 18px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+            <div style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase;">Advisory Engine</div>
+            <div style="font-size: 1.15rem; font-weight: 700; color: #38bdf8; margin-top: 6px;">
+              FAO-56 Dual Kc Rules
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px;">Actionable Advice:</div>
+          <ul id="advisor-points" style="padding-left: 20px; font-size: 0.9rem; color: #e2e8f0; line-height: 1.8;">
+            <li>Root zone moisture is presently within field capacity.</li>
+            <li>No rainfall inhibition flags active in the 6-hour forecast window.</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script>
+    function setPreset(type) {
+      if (type === 'cotton') {
+        document.getElementById('input-n').value = 117;
+        document.getElementById('input-p').value = 46;
+        document.getElementById('input-k').value = 19;
+        document.getElementById('input-temp').value = 24.0;
+        document.getElementById('input-humid').value = 80.0;
+        document.getElementById('input-ph').value = 6.9;
+        document.getElementById('input-rain').value = 80.0;
+      } else if (type === 'rice') {
+        document.getElementById('input-n').value = 80;
+        document.getElementById('input-p').value = 48;
+        document.getElementById('input-k').value = 40;
+        document.getElementById('input-temp').value = 23.6;
+        document.getElementById('input-humid').value = 82.0;
+        document.getElementById('input-ph').value = 6.4;
+        document.getElementById('input-rain').value = 236.0;
+      } else if (type === 'chickpea') {
+        document.getElementById('input-n').value = 40;
+        document.getElementById('input-p').value = 67;
+        document.getElementById('input-k').value = 80;
+        document.getElementById('input-temp').value = 18.8;
+        document.getElementById('input-humid').value = 16.8;
+        document.getElementById('input-ph').value = 7.3;
+        document.getElementById('input-rain').value = 80.0;
+      } else if (type === 'maize') {
+        document.getElementById('input-n').value = 77;
+        document.getElementById('input-p').value = 48;
+        document.getElementById('input-k').value = 20;
+        document.getElementById('input-temp').value = 22.3;
+        document.getElementById('input-humid').value = 65.0;
+        document.getElementById('input-ph').value = 6.2;
+        document.getElementById('input-rain').value = 84.7;
+      }
+    }
+
+    document.getElementById('form-crop-advisory').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        const payload = {
+          N: parseFloat(document.getElementById('input-n').value),
+          P: parseFloat(document.getElementById('input-p').value),
+          K: parseFloat(document.getElementById('input-k').value),
+          temperature: parseFloat(document.getElementById('input-temp').value),
+          humidity: parseFloat(document.getElementById('input-humid').value),
+          ph: parseFloat(document.getElementById('input-ph').value),
+          rainfall: parseFloat(document.getElementById('input-rain').value)
+        };
+
+        const res = await API.post('/api/advisor/crop', payload);
+
+        document.getElementById('recommended-crop-name').textContent = res.recommended_crop;
+        document.getElementById('model-conf').textContent = `${res.model_confidence}%`;
+
+        const runnerUpsContainer = document.getElementById('runner-ups-list');
+        if (res.top_recommendations && res.top_recommendations.length > 1) {
+          runnerUpsContainer.innerHTML = res.top_recommendations.slice(1).map(r => `
+            <div style="display:flex; justify-content:space-between; padding:8px 12px; background:rgba(255,255,255,0.03); border-radius:6px;">
+              <span>${r.crop}</span>
+              <span style="color:#38bdf8; font-weight:600;">${r.confidence}%</span>
+            </div>
+          `).join('');
+        }
+
+        showToast(`ML Recommended Crop: ${res.recommended_crop}`, "success");
+      } catch (err) {
+        showToast("Inference error: " + err.message, "error");
+      }
+    });
+
+    async function loadIrrigationAdvisor() {
+      try {
+        const tele = await API.get('/api/telemetry/latest?farm_id=1');
+        const moisture = tele.telemetry ? tele.telemetry.moisture : 42.0;
+
+        const res = await API.post('/api/advisor/irrigation', {
+          moisture: moisture,
+          crop: 'Cotton',
+          temperature: 28.0,
+          rain_probability: 5
+        });
+
+        document.getElementById('advisor-headline').textContent = res.headline;
+        document.getElementById('advisor-runtime').textContent = `${Math.round(res.recommended_runtime_seconds / 60)} minutes`;
+
+        const urgencyBadge = document.getElementById('irrigation-urgency-badge');
+        urgencyBadge.textContent = `${res.urgency} URGENCY`;
+        if (res.urgency === 'HIGH') urgencyBadge.className = 'badge-state badge-error';
+        else if (res.urgency === 'MODERATE') urgencyBadge.className = 'badge-state badge-stale';
+        else urgencyBadge.className = 'badge-state badge-live';
+
+        const pointsEl = document.getElementById('advisor-points');
+        pointsEl.innerHTML = res.advice_points.map(pt => `<li>${pt}</li>`).join('');
+      } catch (err) {
+        console.warn("Irrigation advisor error:", err);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadIrrigationAdvisor);
+  </script>
+</body>
+</html>

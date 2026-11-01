@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Farm Profiles — DHARAA</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand-container">
+      <div class="brand-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
+      </div>
+      <div>
+        <div class="brand-title">DHARAA</div>
+        <div class="brand-subtitle">Smart Irrigation</div>
+      </div>
+    </div>
+    <ul class="nav-menu">
+      <li><a href="/" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg><span class="nav-text">Dashboard</span></a></li>
+      <li><a href="/farms" class="nav-link active"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span class="nav-text">My Farms</span></a></li>
+      <li><a href="/schedules" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><span class="nav-text">Schedules</span></a></li>
+      <li><a href="/weather-view" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg><span class="nav-text">Weather Forecast</span></a></li>
+      <li><a href="/advisor-view" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg><span class="nav-text">AI Crop Advisor</span></a></li>
+      <li><a href="/analytics-view" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg><span class="nav-text">Analytics</span></a></li>
+      <li><a href="/profile-view" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><span class="nav-text">Profile & Node</span></a></li>
+    </ul>
+  </aside>
+
+  <!-- Main Wrapper -->
+  <div class="main-wrapper">
+    <header class="topbar">
+      <div class="topbar-left">
+        <h2 style="font-size: 1.15rem; font-weight: 700;">Farm Profiles & Field Nodes</h2>
+      </div>
+      <div class="topbar-right">
+        <button id="btn-open-add-farm" class="btn btn-primary">+ Register New Farm</button>
+      </div>
+    </header>
+
+    <main class="content-container">
+      <section class="page-header">
+        <div>
+          <h1 class="page-title">Registered Farm Properties</h1>
+          <p class="page-subtitle">Configure agricultural plots, assigned ESP32 IoT nodes, soil taxonomy, and crop cultivars</p>
+        </div>
+      </section>
+
+      <!-- Farm Cards Grid -->
+      <section id="farms-grid" class="grid-3">
+        <!-- Rendered dynamically -->
+      </section>
+    </main>
+  </div>
+
+  <!-- Add Farm Modal -->
+  <div id="modal-add-farm" class="modal-backdrop">
+    <div class="modal-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+        <h3 style="font-size: 1.3rem;">Register New Farm Plot</h3>
+        <button id="btn-close-modal" style="background:transparent; border:none; color:var(--text-secondary); font-size:1.5rem; cursor:pointer;">&times;</button>
+      </div>
+
+      <form id="form-new-farm">
+        <div class="form-group">
+          <label class="form-label">Farm Plot Name</label>
+          <input id="farm-name" type="text" class="form-control" placeholder="e.g. North Orchard" required>
+        </div>
+        <div class="grid-2" style="gap:12px;">
+          <div class="form-group">
+            <label class="form-label">State / District</label>
+            <input id="farm-district" type="text" class="form-control" value="Telangana, India" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Active Crop</label>
+            <input id="farm-crop" type="text" class="form-control" value="Wheat" required>
+          </div>
+        </div>
+        <div class="grid-2" style="gap:12px;">
+          <div class="form-group">
+            <label class="form-label">Latitude</label>
+            <input id="farm-lat" type="number" step="0.0001" class="form-control" value="17.3850" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Longitude</label>
+            <input id="farm-lon" type="number" step="0.0001" class="form-control" value="78.4867" required>
+          </div>
+        </div>
+        <div class="grid-2" style="gap:12px;">
+          <div class="form-group">
+            <label class="form-label">Land Area (Acres)</label>
+            <input id="farm-area" type="number" step="0.1" class="form-control" value="2.5" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Soil Taxonomy</label>
+            <select id="farm-soil" class="form-control">
+              <option value="Black Cotton Soil">Black Cotton Soil</option>
+              <option value="Loamy Soil">Loamy Soil</option>
+              <option value="Sandy Loam">Sandy Loam</option>
+              <option value="Alluvial Soil">Alluvial Soil</option>
+              <option value="Red Soil">Red Soil</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:20px;">
+          <button type="button" id="btn-cancel-modal" class="btn btn-outline">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Farm & Node</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script>
+    async function loadFarms() {
+      try {
+        const farms = await API.get('/api/farms');
+        const grid = document.getElementById('farms-grid');
+        grid.innerHTML = farms.map(f => `
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">${f.crop} Plot</span>
+              <span class="badge-state badge-live">Active</span>
+            </div>
+            <div style="font-size: 1.4rem; font-weight: 700; color: #ffffff; margin-bottom: 6px;">
+              ${f.name}
+            </div>
+            <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px;">
+              📍 ${f.state_district || 'India'} (${f.lat}° N, ${f.lon}° E)
+            </div>
+            <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 12px; font-size: 0.85rem; line-height: 1.8;">
+              <div>Area: <strong>${f.area} ${f.area_unit}</strong></div>
+              <div>Soil: <strong>${f.soil_type}</strong></div>
+              <div>Water: <strong>${f.water_source}</strong></div>
+            </div>
+            <div style="margin-top: 18px; display:flex; justify-content:space-between; align-items:center;">
+              <a href="/?farm_id=${f.id}" class="btn btn-primary" style="padding: 6px 14px; font-size: 0.82rem;">Select on Dashboard</a>
+              <button onclick="archiveFarm(${f.id})" class="btn btn-outline" style="padding: 6px 10px; font-size: 0.82rem; color: #f43f5e;">Archive</button>
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        showToast("Error loading farms: " + err.message, "error");
+      }
+    }
+
+    async function archiveFarm(id) {
+      if (confirm("Archive this farm profile?")) {
+        try {
+          await API.delete(`/api/farms/${id}`);
+          showToast("Farm archived", "info");
+          loadFarms();
+        } catch (err) {
+          showToast("Failed to archive: " + err.message, "error");
+        }
+      }
+    }
+
+    // Modal Handlers
+    const modal = document.getElementById('modal-add-farm');
+    document.getElementById('btn-open-add-farm').addEventListener('click', () => modal.classList.add('show'));
+    document.getElementById('btn-close-modal').addEventListener('click', () => modal.classList.remove('show'));
+    document.getElementById('btn-cancel-modal').addEventListener('click', () => modal.classList.remove('show'));
+
+    document.getElementById('form-new-farm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        await API.post('/api/farms', {
+          name: document.getElementById('farm-name').value,
+          state_district: document.getElementById('farm-district').value,
+          crop: document.getElementById('farm-crop').value,
+          lat: parseFloat(document.getElementById('farm-lat').value),
+          lon: parseFloat(document.getElementById('farm-lon').value),
+          area: parseFloat(document.getElementById('farm-area').value),
+          soil_type: document.getElementById('farm-soil').value
+        });
+        modal.classList.remove('show');
+        showToast("Farm and IoT node created!", "success");
+        loadFarms();
+      } catch (err) {
+        showToast("Creation failed: " + err.message, "error");
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', loadFarms);
+  </script>
+</body>
+</html>
