@@ -184,7 +184,13 @@ function updatePumpControl(data) {
 
   if (repEl) {
     repEl.textContent = reported;
-    repEl.className = `indicator-state ${reported === 'ON' ? 'state-on' : 'state-off'}`;
+    repEl.style.color = reported === 'ON' ? 'var(--success)' : 'var(--text-muted)';
+  }
+
+  const repMirror = document.getElementById('state-reported-mirror');
+  if (repMirror) {
+    repMirror.textContent = reported;
+    repMirror.className = `indicator-state ${reported === 'ON' ? 'state-on' : 'state-off'}`;
   }
 
   // Manage runtime timer

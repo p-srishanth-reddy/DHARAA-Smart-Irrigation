@@ -3,44 +3,134 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Weather Forecast — DHARAA Smart Irrigation</title>
+  <title>Weather Forecast — DHARAA</title>
+  <meta name="description" content="Open-Meteo 24-hour meteorological forecasting with precipitation probability and irrigation advisories.">
   <link rel="stylesheet" href="/css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <!-- Sidebar -->
+
+  <!-- Mobile Overlay -->
+  <div class="sidebar-overlay"></div>
+
+  <!-- Left Sidebar Navigation -->
   <aside class="sidebar">
     <div class="brand-container">
       <div class="brand-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
         </svg>
       </div>
       <div>
         <div class="brand-title">DHARAA</div>
-        <div class="brand-subtitle">Smart Irrigation</div>
+        <div class="brand-subtitle">Smart Irrigation System</div>
       </div>
     </div>
+
     <ul class="nav-menu">
-      <li><a href="/" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg><span class="nav-text">Dashboard</span></a></li>
-      <li><a href="/farms" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span class="nav-text">My Farms</span></a></li>
-      <li><a href="/schedules" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><span class="nav-text">Schedules</span></a></li>
-      <li><a href="/weather-view" class="nav-link active"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg><span class="nav-text">Weather Forecast</span></a></li>
-      <li><a href="/advisor-view" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg><span class="nav-text">AI Crop Advisor</span></a></li>
-      <li><a href="/analytics-view" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg><span class="nav-text">Analytics</span></a></li>
-      <li><a href="/profile-view" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><span class="nav-text">Profile & Node</span></a></li>
+      <li>
+        <a href="/" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+            <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+          </svg>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li>
+        <a href="/farms" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          <span>Farms</span>
+        </a>
+      </li>
+      <li>
+        <a href="/schedules" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <span>Schedules</span>
+        </a>
+      </li>
+      <li>
+        <a href="/weather-view" class="nav-link active">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>
+          </svg>
+          <span>Weather</span>
+        </a>
+      </li>
+      <li>
+        <a href="/advisor-view" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+          <span>AI Advisor</span>
+        </a>
+      </li>
+      <li>
+        <a href="/analytics-view" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+          <span>Analytics</span>
+        </a>
+      </li>
+      <li>
+        <a href="/profile-view" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span>Profile</span>
+        </a>
+      </li>
     </ul>
+
+    <!-- Footer Profile -->
+    <div class="sidebar-footer">
+      <div class="user-mini-card">
+        <div class="user-avatar">SR</div>
+        <div>
+          <div class="user-name">Srishanth Reddy</div>
+          <div class="user-role">Farm Operator</div>
+        </div>
+      </div>
+      <a href="/profile-view" style="color: var(--text-muted); text-decoration: none;" title="Node Settings">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </a>
+    </div>
   </aside>
 
   <!-- Main Wrapper -->
   <div class="main-wrapper">
     <header class="topbar">
       <div class="topbar-left">
-        <h2 style="font-size: 1.15rem; font-weight: 700;">Open-Meteo Weather Integration</h2>
+        <button id="btn-mobile-menu" class="btn-mobile-menu" aria-label="Toggle navigation menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+        <span class="topbar-page-title">Weather Intelligence</span>
       </div>
+
       <div class="topbar-right">
         <span id="weather-retrieval-pill" class="device-status-pill online">
-          <span class="pulse-dot"></span>
+          <span class="status-dot"></span>
           <span id="weather-retrieval-text">Fetching Forecast...</span>
         </span>
       </div>
@@ -49,60 +139,88 @@
     <main class="content-container">
       <section class="page-header">
         <div>
-          <h1 class="page-title">Farm Weather & Precipitation Outlook</h1>
-          <p class="page-subtitle">Coordinates: <span id="weather-coords">17.3850° N, 78.4867° E</span> | Attribution: Open-Meteo API</p>
+          <h1 class="page-title">Farm Meteorological Outlook</h1>
+          <p class="page-subtitle">Coordinates: <strong id="weather-coords">17.3850° N, 78.4867° E</strong> | Sourced via Open-Meteo High-Resolution Model</p>
         </div>
-        <button id="btn-refresh-weather" class="btn btn-outline">🔄 Refresh Forecast</button>
+        <button id="btn-refresh-weather" class="btn btn-outline btn-sm">
+          <span>🔄 Refresh Forecast</span>
+        </button>
       </section>
 
-      <!-- Current Weather Cards -->
+      <!-- 4 Weather Metric Cards -->
       <section class="grid-4">
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Ambient Temp</span>
-            <span class="badge-state badge-live">Open-Meteo</span>
+        <div class="card metric-card">
+          <div class="metric-icon-box orange">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path></svg>
           </div>
-          <div id="w-temp" class="card-value">--<span class="card-unit">°C</span></div>
-          <div class="card-footer"><span>Forecast 2m</span></div>
+          <div class="metric-content">
+            <div class="metric-label">Forecast Temperature</div>
+            <div id="w-temp" class="card-value">--<span class="card-unit">°C</span></div>
+            <div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 4px;">2-meter ambient level</div>
+          </div>
         </div>
 
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Air Humidity</span>
-            <span class="badge-state badge-live">Live</span>
+        <div class="card metric-card">
+          <div class="metric-icon-box blue">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg>
           </div>
-          <div id="w-humidity" class="card-value">--<span class="card-unit">%</span></div>
-          <div class="card-footer"><span>Relative Humidity</span></div>
+          <div class="metric-content">
+            <div class="metric-label">Relative Humidity</div>
+            <div id="w-humidity" class="card-value">--<span class="card-unit">%</span></div>
+            <div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 4px;">Atmospheric saturation</div>
+          </div>
         </div>
 
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Precipitation Rate</span>
-            <span class="badge-state badge-live">Rain</span>
+        <div class="card metric-card">
+          <div class="metric-icon-box blue">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="19" x2="8" y2="21"></line><line x1="12" y1="17" x2="12" y2="23"></line><line x1="16" y1="19" x2="16" y2="21"></line><path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"></path></svg>
           </div>
-          <div id="w-rain" class="card-value">0.0<span class="card-unit">mm</span></div>
-          <div class="card-footer"><span>Current rainfall rate</span></div>
+          <div class="metric-content">
+            <div class="metric-label">Precipitation Rate</div>
+            <div id="w-rain" class="card-value">0.0<span class="card-unit">mm</span></div>
+            <div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 4px;">Current forecasted rain</div>
+          </div>
         </div>
 
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Wind Velocity</span>
-            <span class="badge-state badge-live">10m Speed</span>
+        <div class="card metric-card">
+          <div class="metric-icon-box green">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"></path></svg>
           </div>
-          <div id="w-wind" class="card-value">--<span class="card-unit">km/h</span></div>
-          <div class="card-footer"><span>Affects evapotranspiration</span></div>
+          <div class="metric-content">
+            <div class="metric-label">Wind Velocity</div>
+            <div id="w-wind" class="card-value">--<span class="card-unit">km/h</span></div>
+            <div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 4px;">10-meter surface wind</div>
+          </div>
         </div>
       </section>
 
-      <!-- Hourly Forecast Chart -->
+      <!-- 24-Hour Forecast Chart -->
       <section class="card">
         <div class="card-header">
           <span class="card-title">24-Hour Temperature & Rain Probability Horizon</span>
-          <span class="badge-state badge-live">Next 24 Hours</span>
+          <span class="badge-state badge-live">Hourly Projection</span>
         </div>
-        <div style="height: 320px; position: relative;">
+        <div style="height: 300px; position: relative;">
           <canvas id="chart-weather-forecast"></canvas>
         </div>
+        <div class="card-footer">
+          <span>Blue bars indicate precipitation probability (%)</span>
+          <span>Orange curve indicates 2m temperature (°C)</span>
+        </div>
+      </section>
+
+      <!-- Weather-Based Irrigation Guidance Callout -->
+      <section class="card" style="background: var(--pale-green); border: 1px solid #D5E8D8; border-left: 4px solid var(--primary-green);">
+        <div class="card-header" style="margin-bottom: 6px;">
+          <span class="card-title" style="color: var(--primary-dark-green);">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+            Weather-Based Irrigation Advisory
+          </span>
+          <span class="badge-state badge-live">Advisory Active</span>
+        </div>
+        <p style="font-size: 0.88rem; color: var(--text-primary); line-height: 1.6;">
+          When probability of rain exceeds 50% in the upcoming 6-hour forecast window, automated irrigation cycles are inhibited to prevent root saturation and reduce unnecessary groundwater consumption. Local sensor measurements remain sovereign over forecast estimates.
+        </p>
       </section>
     </main>
   </div>

@@ -67,18 +67,37 @@ function showToast(message, type = 'info') {
   const toast = document.createElement('div');
   toast.className = `toast toast-${type}`;
   
-  const icon = type === 'success' ? '✓' : (type === 'error' ? '⚠️' : 'ℹ️');
-  const color = type === 'success' ? '#10b981' : (type === 'error' ? '#f43f5e' : '#06b6d4');
+  const icon = type === 'success' ? '✓' : (type === 'error' ? '✕' : (type === 'warning' ? '⚠' : 'ℹ'));
   
-  toast.style.borderColor = color;
-  toast.innerHTML = `<span style="color: ${color}; font-weight: bold; font-size: 1.1rem;">${icon}</span> <span>${message}</span>`;
+  toast.innerHTML = `<span style="font-weight: 700; font-size: 1rem;">${icon}</span> <span>${message}</span>`;
   
   container.appendChild(toast);
 
   setTimeout(() => {
     toast.style.opacity = '0';
-    toast.style.transform = 'translateX(100%)';
-    toast.style.transition = 'all 0.3s ease';
-    setTimeout(() => toast.remove(), 300);
+    toast.style.transform = 'translateY(10px)';
+    toast.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+    setTimeout(() => toast.remove(), 200);
   }, 4000);
 }
+
+// Mobile Sidebar Drawer Toggle Helper
+document.addEventListener("DOMContentLoaded", () => {
+  const btnMobile = document.getElementById('btn-mobile-menu');
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.querySelector('.sidebar-overlay');
+
+  if (btnMobile && sidebar) {
+    btnMobile.addEventListener('click', () => {
+      sidebar.classList.toggle('mobile-open');
+      if (overlay) overlay.classList.toggle('mobile-open');
+    });
+  }
+
+  if (overlay && sidebar) {
+    overlay.addEventListener('click', () => {
+      sidebar.classList.remove('mobile-open');
+      overlay.classList.remove('mobile-open');
+    });
+  }
+});

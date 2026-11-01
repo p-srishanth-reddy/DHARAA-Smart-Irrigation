@@ -4,80 +4,179 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Analytics & Historical Trends — DHARAA</title>
+  <meta name="description" content="Longitudinal soil dynamics, actuation cycle runtimes, and water volume accounting.">
   <link rel="stylesheet" href="/css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <!-- Sidebar -->
+
+  <!-- Mobile Overlay -->
+  <div class="sidebar-overlay"></div>
+
+  <!-- Left Sidebar Navigation -->
   <aside class="sidebar">
     <div class="brand-container">
       <div class="brand-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+        </svg>
       </div>
       <div>
         <div class="brand-title">DHARAA</div>
-        <div class="brand-subtitle">Smart Irrigation</div>
+        <div class="brand-subtitle">Smart Irrigation System</div>
       </div>
     </div>
+
     <ul class="nav-menu">
-      <li><a href="/" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg><span class="nav-text">Dashboard</span></a></li>
-      <li><a href="/farms" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span class="nav-text">My Farms</span></a></li>
-      <li><a href="/schedules" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><span class="nav-text">Schedules</span></a></li>
-      <li><a href="/weather-view" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg><span class="nav-text">Weather Forecast</span></a></li>
-      <li><a href="/advisor-view" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg><span class="nav-text">AI Crop Advisor</span></a></li>
-      <li><a href="/analytics-view" class="nav-link active"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg><span class="nav-text">Analytics</span></a></li>
-      <li><a href="/profile-view" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><span class="nav-text">Profile & Node</span></a></li>
+      <li>
+        <a href="/" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+            <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+          </svg>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li>
+        <a href="/farms" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          <span>Farms</span>
+        </a>
+      </li>
+      <li>
+        <a href="/schedules" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <span>Schedules</span>
+        </a>
+      </li>
+      <li>
+        <a href="/weather-view" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>
+          </svg>
+          <span>Weather</span>
+        </a>
+      </li>
+      <li>
+        <a href="/advisor-view" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+          <span>AI Advisor</span>
+        </a>
+      </li>
+      <li>
+        <a href="/analytics-view" class="nav-link active">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+          <span>Analytics</span>
+        </a>
+      </li>
+      <li>
+        <a href="/profile-view" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span>Profile</span>
+        </a>
+      </li>
     </ul>
+
+    <!-- Footer Profile -->
+    <div class="sidebar-footer">
+      <div class="user-mini-card">
+        <div class="user-avatar">SR</div>
+        <div>
+          <div class="user-name">Srishanth Reddy</div>
+          <div class="user-role">Farm Operator</div>
+        </div>
+      </div>
+      <a href="/profile-view" style="color: var(--text-muted); text-decoration: none;" title="Node Settings">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </a>
+    </div>
   </aside>
 
   <!-- Main Wrapper -->
   <div class="main-wrapper">
     <header class="topbar">
       <div class="topbar-left">
-        <h2 style="font-size: 1.15rem; font-weight: 700;">Historical Agronomic Analytics</h2>
+        <button id="btn-mobile-menu" class="btn-mobile-menu" aria-label="Toggle navigation menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+        <span class="topbar-page-title">Agronomic Analytics</span>
       </div>
+
       <div class="topbar-right">
-        <span class="device-status-pill online"><span class="pulse-dot"></span><span>Aggregated Database</span></span>
+        <span class="device-status-pill online">
+          <span class="status-dot"></span>
+          <span>Aggregated Telemetry DB</span>
+        </span>
       </div>
     </header>
 
     <main class="content-container">
       <section class="page-header">
         <div>
-          <h1 class="page-title">Soil Dynamics & Water Volume Accounting</h1>
-          <p class="page-subtitle">Historical trends, daily pump runtimes, and flow meter metrics</p>
+          <h1 class="page-title">Historical Trends & Water Accounting</h1>
+          <p class="page-subtitle">Historical soil moisture trends, pump session runtimes, and flow sensor volumetric data.</p>
         </div>
       </section>
 
       <!-- KPI Summary Cards -->
       <section class="grid-3">
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Recorded Telemetry Points</span>
-            <span class="badge-state badge-live">SQLite</span>
+        <div class="card metric-card">
+          <div class="metric-icon-box green">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
           </div>
-          <div id="stat-readings" class="card-value">0</div>
-          <div class="card-footer"><span>Total continuous sensor samples</span></div>
+          <div class="metric-content">
+            <div class="metric-label">Logged Telemetry Points</div>
+            <div id="stat-readings" class="card-value">0</div>
+            <div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 4px;">Continuous sensor samples</div>
+          </div>
         </div>
 
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Irrigation Sessions</span>
-            <span class="badge-state badge-live">Events</span>
+        <div class="card metric-card">
+          <div class="metric-icon-box blue">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
           </div>
-          <div id="stat-sessions" class="card-value">0</div>
-          <div class="card-footer"><span>Logged actuation cycles</span></div>
+          <div class="metric-content">
+            <div class="metric-label">Irrigation Cycles Recorded</div>
+            <div id="stat-sessions" class="card-value">0</div>
+            <div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 4px;">Pump start/stop events</div>
+          </div>
         </div>
 
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Water Volume Accounting</span>
-            <span class="badge-state badge-stale">Calibration Info</span>
+        <div class="card metric-card">
+          <div class="metric-icon-box orange">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
           </div>
-          <div class="card-value" style="font-size: 1.5rem; color: #38bdf8;">
-            450 pulses / L
+          <div class="metric-content">
+            <div class="metric-label">Water Meter Factor</div>
+            <div class="card-value" style="font-size: 1.4rem;">450 <span class="card-unit">pulses / L</span></div>
+            <div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 4px;">YF-S201 calibration factor</div>
           </div>
-          <div class="card-footer"><span>YF-S201 Flow Sensor Standard</span></div>
         </div>
       </section>
 
@@ -86,29 +185,35 @@
         <div class="card">
           <div class="card-header">
             <span class="card-title">Daily Average Soil Moisture Trend (%)</span>
+            <span class="badge-state badge-live">7-Day Aggregates</span>
           </div>
-          <div style="height: 280px; position: relative;">
+          <div style="height: 270px; position: relative;">
             <canvas id="chart-daily-moisture"></canvas>
           </div>
         </div>
 
         <div class="card">
           <div class="card-header">
-            <span class="card-title">Daily Pump Runtime Minutes</span>
+            <span class="card-title">Daily Pump Runtime (Minutes)</span>
+            <span class="badge-state badge-live">7-Day Runtime</span>
           </div>
-          <div style="height: 280px; position: relative;">
+          <div style="height: 270px; position: relative;">
             <canvas id="chart-daily-runtime"></canvas>
           </div>
         </div>
       </section>
 
-      <!-- Flow Meter Notice -->
-      <section class="card" style="background: rgba(15, 23, 42, 0.5);">
-        <div class="card-header">
-          <span class="card-title" style="color: #94a3b8;">Water-Volume Analytics Transparency Policy</span>
+      <!-- Transparency Notice -->
+      <section class="card" style="background: var(--pale-green); border: 1px solid #D5E8D8; border-left: 4px solid var(--primary-green);">
+        <div class="card-header" style="margin-bottom: 6px;">
+          <span class="card-title" style="color: var(--primary-dark-green);">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            Water-Volume Analytics Transparency Policy
+          </span>
+          <span class="badge-state badge-live">Verified Accounting</span>
         </div>
-        <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6;">
-          In accordance with the DHARAA engineering specification, water volume figures in liters are estimated strictly by dividing accumulated flow sensor pulses by the calibrated factor (<em>P = 450 pulses/L</em>). When uncalibrated, only raw pulse counts are displayed rather than speculative liters.
+        <p style="font-size: 0.88rem; color: var(--text-primary); line-height: 1.6;">
+          In accordance with the DHARAA engineering specification, water volume figures are calculated directly from physical flow sensor pulses divided by the calibration factor (<em>P = 450 pulses/L</em>). When uncalibrated, only raw pulse counts are displayed rather than speculative liters.
         </p>
       </section>
     </main>
@@ -132,19 +237,20 @@
             datasets: [{
               label: 'Avg Moisture (%)',
               data: mAvgs.length ? mAvgs : [0],
-              backgroundColor: 'rgba(16, 185, 129, 0.4)',
-              borderColor: '#10b981',
+              backgroundColor: 'rgba(34, 164, 71, 0.25)',
+              borderColor: '#22A447',
               borderWidth: 1.5,
-              borderRadius: 6
+              borderRadius: 4
             }]
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
             scales: {
-              y: { min: 0, max: 100, ticks: { callback: v => v + '%' } },
+              y: { min: 0, max: 100, grid: { color: '#F3F4F6' }, ticks: { callback: v => v + '%' } },
               x: { grid: { display: false } }
-            }
+            },
+            plugins: { legend: { display: false } }
           }
         });
 
@@ -158,21 +264,23 @@
             datasets: [{
               label: 'Pump Runtime (Minutes)',
               data: rMins.length ? rMins : [0],
-              borderColor: '#38bdf8',
-              backgroundColor: 'rgba(56, 189, 248, 0.15)',
+              borderColor: '#3B82F6',
+              backgroundColor: 'rgba(59, 130, 246, 0.08)',
               fill: true,
               tension: 0.3,
               borderWidth: 2,
-              pointRadius: 4
+              pointRadius: 3,
+              pointBackgroundColor: '#3B82F6'
             }]
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
             scales: {
-              y: { min: 0, ticks: { callback: v => v + ' min' } },
+              y: { min: 0, grid: { color: '#F3F4F6' }, ticks: { callback: v => v + ' min' } },
               x: { grid: { display: false } }
-            }
+            },
+            plugins: { legend: { display: false } }
           }
         });
 

@@ -4,39 +4,134 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Irrigation Schedules — DHARAA</title>
+  <meta name="description" content="Manage automated irrigation schedules with strict pre-flight safety checks.">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <!-- Sidebar -->
+
+  <!-- Mobile Overlay -->
+  <div class="sidebar-overlay"></div>
+
+  <!-- Left Sidebar Navigation -->
   <aside class="sidebar">
     <div class="brand-container">
       <div class="brand-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+        </svg>
       </div>
       <div>
         <div class="brand-title">DHARAA</div>
-        <div class="brand-subtitle">Smart Irrigation</div>
+        <div class="brand-subtitle">Smart Irrigation System</div>
       </div>
     </div>
+
     <ul class="nav-menu">
-      <li><a href="/" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg><span class="nav-text">Dashboard</span></a></li>
-      <li><a href="/farms" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span class="nav-text">My Farms</span></a></li>
-      <li><a href="/schedules" class="nav-link active"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><span class="nav-text">Schedules</span></a></li>
-      <li><a href="/weather-view" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg><span class="nav-text">Weather Forecast</span></a></li>
-      <li><a href="/advisor-view" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg><span class="nav-text">AI Crop Advisor</span></a></li>
-      <li><a href="/analytics-view" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg><span class="nav-text">Analytics</span></a></li>
-      <li><a href="/profile-view" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><span class="nav-text">Profile & Node</span></a></li>
+      <li>
+        <a href="/" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+            <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+          </svg>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li>
+        <a href="/farms" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          <span>Farms</span>
+        </a>
+      </li>
+      <li>
+        <a href="/schedules" class="nav-link active">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <span>Schedules</span>
+        </a>
+      </li>
+      <li>
+        <a href="/weather-view" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>
+          </svg>
+          <span>Weather</span>
+        </a>
+      </li>
+      <li>
+        <a href="/advisor-view" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+          <span>AI Advisor</span>
+        </a>
+      </li>
+      <li>
+        <a href="/analytics-view" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+          <span>Analytics</span>
+        </a>
+      </li>
+      <li>
+        <a href="/profile-view" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span>Profile</span>
+        </a>
+      </li>
     </ul>
+
+    <!-- Footer Profile -->
+    <div class="sidebar-footer">
+      <div class="user-mini-card">
+        <div class="user-avatar">SR</div>
+        <div>
+          <div class="user-name">Srishanth Reddy</div>
+          <div class="user-role">Farm Operator</div>
+        </div>
+      </div>
+      <a href="/profile-view" style="color: var(--text-muted); text-decoration: none;" title="Node Settings">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </a>
+    </div>
   </aside>
 
   <!-- Main Wrapper -->
   <div class="main-wrapper">
     <header class="topbar">
       <div class="topbar-left">
-        <h2 style="font-size: 1.15rem; font-weight: 700;">Irrigation Planning & Automated Schedules</h2>
+        <button id="btn-mobile-menu" class="btn-mobile-menu" aria-label="Toggle navigation menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+        <span class="topbar-page-title">Irrigation Schedules</span>
       </div>
+
       <div class="topbar-right">
-        <button id="btn-open-add-schedule" class="btn btn-primary">+ Create Schedule</button>
+        <button id="btn-open-add-schedule" class="btn btn-primary btn-sm">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          <span>Add Schedule</span>
+        </button>
       </div>
     </header>
 
@@ -44,21 +139,24 @@
       <section class="page-header">
         <div>
           <h1 class="page-title">Automated Irrigation Windows</h1>
-          <p class="page-subtitle">All scheduled activations run strict local pre-flight checks before relay engagement</p>
+          <p class="page-subtitle">Configure automated irrigation sessions with local pre-flight checks and runtime safety watchdogs.</p>
         </div>
       </section>
 
-      <!-- Pre-flight Safety Protocol Notice -->
-      <section class="card" style="border-left: 4px solid var(--emerald-primary);">
-        <div class="card-header">
-          <span class="card-title" style="color: #34d399;">Mandatory Pre-Flight Safety Verification</span>
+      <!-- Pre-flight Safety Protocol Notice Banner -->
+      <section class="card" style="background: var(--pale-green); border: 1px solid #D5E8D8; border-left: 4px solid var(--primary-green);">
+        <div class="card-header" style="margin-bottom: 8px;">
+          <span class="card-title" style="color: var(--primary-dark-green);">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            Automated Pre-Flight Safety Protocol
+          </span>
           <span class="badge-state badge-live">Hardware Enforced</span>
         </div>
-        <div class="grid-4" style="font-size: 0.85rem; color: #e2e8f0; line-height: 1.6;">
-          <div>✅ <strong>Device Online:</strong> Node last-seen &lt; 120s ago</div>
-          <div>✅ <strong>Rain Inhibit:</strong> Surface DO pin reports dry</div>
-          <div>✅ <strong>Cooldown Safe:</strong> Min 10 min since last off</div>
-          <div>✅ <strong>Watchdog Limit:</strong> Max 300s runtime hardcap</div>
+        <div class="grid-4" style="font-size: 0.82rem; color: var(--text-primary); line-height: 1.5;">
+          <div><strong style="color: var(--primary-dark-green);">✓ Node Online:</strong> Last-seen ping &lt; 120s</div>
+          <div><strong style="color: var(--primary-dark-green);">✓ Rain Inhibit:</strong> DO pin dry verification</div>
+          <div><strong style="color: var(--primary-dark-green);">✓ Cooldown:</strong> 10-min interval between runs</div>
+          <div><strong style="color: var(--primary-dark-green);">✓ Local Watchdog:</strong> 300s hardcap auto-stop</div>
         </div>
       </section>
 
@@ -73,16 +171,16 @@
               <tr>
                 <th>Schedule Name</th>
                 <th>Target Farm</th>
-                <th>Start Time</th>
-                <th>Moisture Target</th>
+                <th>Daily Start Time</th>
+                <th>Target Moisture</th>
                 <th>Runtime Cap</th>
                 <th>Status</th>
-                <th>Action</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody id="schedules-table-body">
               <tr>
-                <td colspan="7" style="text-align: center; color: var(--text-muted);">Loading schedules...</td>
+                <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">Loading schedules...</td>
               </tr>
             </tbody>
           </table>
@@ -94,9 +192,9 @@
   <!-- Add Schedule Modal -->
   <div id="modal-add-sched" class="modal-backdrop">
     <div class="modal-content">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
-        <h3 style="font-size: 1.3rem;">Create Irrigation Schedule</h3>
-        <button id="btn-close-sched-modal" style="background:transparent; border:none; color:var(--text-secondary); font-size:1.5rem; cursor:pointer;">&times;</button>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color);">
+        <h3 style="font-size: 1.15rem; font-weight: 600; color: var(--text-primary);">Create Irrigation Schedule</h3>
+        <button id="btn-close-sched-modal" style="background:transparent; border:none; color:var(--text-secondary); font-size:1.3rem; cursor:pointer;" aria-label="Close dialog">&times;</button>
       </div>
 
       <form id="form-new-sched">
@@ -120,11 +218,11 @@
         </div>
         <div class="form-group">
           <label class="form-label">Agronomic Notes</label>
-          <input id="sched-notes" type="text" class="form-control" placeholder="Avoid mid-day sun to reduce evaporative loss">
+          <input id="sched-notes" type="text" class="form-control" placeholder="Early morning irrigation reduces evaporative loss">
         </div>
-        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:20px;">
-          <button type="button" id="btn-cancel-sched-modal" class="btn btn-outline">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save Schedule</button>
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+          <button type="button" id="btn-cancel-sched-modal" class="btn btn-outline btn-sm">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm">Save Schedule</button>
         </div>
       </form>
     </div>
@@ -137,20 +235,25 @@
         const scheds = await API.get('/api/schedules');
         const tbody = document.getElementById('schedules-table-body');
         if (scheds.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No schedules configured yet.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">No schedules configured yet. Click "Add Schedule" to configure one.</td></tr>`;
           return;
         }
 
         tbody.innerHTML = scheds.map(s => `
           <tr>
-            <td><strong>${s.name}</strong><br><span style="font-size:0.75rem; color:var(--text-muted)">${s.notes || ''}</span></td>
-            <td>${s.farm_name || 'Farm 1'}</td>
-            <td><strong style="color: #38bdf8;">${s.start_time}</strong></td>
+            <td>
+              <strong>${s.name}</strong>
+              ${s.notes ? `<div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">${s.notes}</div>` : ''}
+            </td>
+            <td>${s.farm_name || 'DHARAA Farm'}</td>
+            <td><strong style="color: var(--primary-green);">${s.start_time}</strong></td>
             <td>${s.target_moisture}%</td>
             <td>${Math.round(s.runtime_limit / 60)} mins (${s.runtime_limit}s)</td>
-            <td><span class="badge-state ${s.status === 'active' ? 'badge-live' : 'badge-stale'}">${s.status}</span></td>
             <td>
-              <button onclick="deleteSchedule(${s.id})" class="btn btn-outline" style="padding:4px 8px; font-size:0.75rem; color:#f43f5e;">Delete</button>
+              <span class="badge-state ${s.status === 'active' ? 'badge-live' : 'badge-neutral'}">${s.status}</span>
+            </td>
+            <td>
+              <button onclick="deleteSchedule(${s.id})" class="btn btn-outline btn-sm" style="color: var(--danger); border-color: #FECACA;">Delete</button>
             </td>
           </tr>
         `).join('');
@@ -160,7 +263,7 @@
     }
 
     async function deleteSchedule(id) {
-      if (confirm("Delete this schedule?")) {
+      if (confirm("Are you sure you want to delete this irrigation schedule?")) {
         try {
           await API.delete(`/api/schedules/${id}`);
           showToast("Schedule removed", "info");
@@ -189,7 +292,7 @@
           notes: document.getElementById('sched-notes').value
         });
         modal.classList.remove('show');
-        showToast("Irrigation schedule registered", "success");
+        showToast("Irrigation schedule registered successfully", "success");
         loadSchedules();
       } catch (err) {
         showToast("Error saving schedule: " + err.message, "error");

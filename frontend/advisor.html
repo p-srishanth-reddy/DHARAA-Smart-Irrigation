@@ -3,44 +3,134 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Crop & Irrigation Advisor — DHARAA</title>
+  <title>AI Agronomic Advisor — DHARAA</title>
+  <meta name="description" content="Machine learning crop recommendation and agronomic irrigation advisory based on validated field parameters.">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <!-- Sidebar -->
+
+  <!-- Mobile Overlay -->
+  <div class="sidebar-overlay"></div>
+
+  <!-- Left Sidebar Navigation -->
   <aside class="sidebar">
     <div class="brand-container">
       <div class="brand-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
         </svg>
       </div>
       <div>
         <div class="brand-title">DHARAA</div>
-        <div class="brand-subtitle">Smart Irrigation</div>
+        <div class="brand-subtitle">Smart Irrigation System</div>
       </div>
     </div>
+
     <ul class="nav-menu">
-      <li><a href="/" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg><span class="nav-text">Dashboard</span></a></li>
-      <li><a href="/farms" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span class="nav-text">My Farms</span></a></li>
-      <li><a href="/schedules" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><span class="nav-text">Schedules</span></a></li>
-      <li><a href="/weather-view" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg><span class="nav-text">Weather Forecast</span></a></li>
-      <li><a href="/advisor-view" class="nav-link active"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg><span class="nav-text">AI Crop Advisor</span></a></li>
-      <li><a href="/analytics-view" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg><span class="nav-text">Analytics</span></a></li>
-      <li><a href="/profile-view" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><span class="nav-text">Profile & Node</span></a></li>
+      <li>
+        <a href="/" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+            <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+          </svg>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li>
+        <a href="/farms" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          <span>Farms</span>
+        </a>
+      </li>
+      <li>
+        <a href="/schedules" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <span>Schedules</span>
+        </a>
+      </li>
+      <li>
+        <a href="/weather-view" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>
+          </svg>
+          <span>Weather</span>
+        </a>
+      </li>
+      <li>
+        <a href="/advisor-view" class="nav-link active">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+          <span>AI Advisor</span>
+        </a>
+      </li>
+      <li>
+        <a href="/analytics-view" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+          <span>Analytics</span>
+        </a>
+      </li>
+      <li>
+        <a href="/profile-view" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span>Profile</span>
+        </a>
+      </li>
     </ul>
+
+    <!-- Footer Profile -->
+    <div class="sidebar-footer">
+      <div class="user-mini-card">
+        <div class="user-avatar">SR</div>
+        <div>
+          <div class="user-name">Srishanth Reddy</div>
+          <div class="user-role">Farm Operator</div>
+        </div>
+      </div>
+      <a href="/profile-view" style="color: var(--text-muted); text-decoration: none;" title="Node Settings">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </a>
+    </div>
   </aside>
 
   <!-- Main Wrapper -->
   <div class="main-wrapper">
     <header class="topbar">
       <div class="topbar-left">
-        <h2 style="font-size: 1.15rem; font-weight: 700;">AI Crop Classification & Irrigation Advisor</h2>
+        <button id="btn-mobile-menu" class="btn-mobile-menu" aria-label="Toggle navigation menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+        <span class="topbar-page-title">AI Agronomic Advisor</span>
       </div>
+
       <div class="topbar-right">
         <span class="device-status-pill online">
-          <span class="pulse-dot"></span>
-          <span>Random Forest ML (95.0% Acc)</span>
+          <span class="status-dot"></span>
+          <span>Random Forest Classifier (95.0% Acc)</span>
         </span>
       </div>
     </header>
@@ -49,48 +139,51 @@
       <section class="page-header">
         <div>
           <h1 class="page-title">Agronomic Decision Support System</h1>
-          <p class="page-subtitle">Trained on Mendeley Crop Recommendation Agronomic Profiles & FAO-56 Evapotranspiration Rules</p>
+          <p class="page-subtitle">Evidence-based crop recommendation and FAO-56 dual crop coefficient irrigation guidance.</p>
         </div>
       </section>
 
-      <!-- Grid 2: Crop Form & Inference Output -->
+      <!-- Grid 2: Crop Recommendation Form & Model Output -->
       <section class="grid-2">
-        <!-- Input Form -->
+        <!-- Input Form Card -->
         <div class="card">
           <div class="card-header">
-            <span class="card-title">Soil Macronutrients & Climate Parameters</span>
-            <span class="badge-state badge-live">Model Inputs</span>
+            <span class="card-title">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--primary-green)" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
+              Soil Macronutrients & Environmental Parameters
+            </span>
           </div>
 
-          <div style="margin-bottom: 16px;">
-            <span style="font-size: 0.8rem; color: var(--text-secondary);">Quick Presets:</span>
-            <div style="display:flex; gap:8px; margin-top:6px; flex-wrap:wrap;">
-              <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:0.75rem;" onclick="setPreset('cotton')">Cotton (Semi-arid)</button>
-              <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:0.75rem;" onclick="setPreset('rice')">Rice (Wetland)</button>
-              <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:0.75rem;" onclick="setPreset('chickpea')">Chickpea (Dryland)</button>
-              <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:0.75rem;" onclick="setPreset('maize')">Maize (Temperate)</button>
+          <!-- Quick Preset Buttons -->
+          <div style="margin-bottom: 14px;">
+            <span style="font-size: 0.78rem; font-weight: 600; color: var(--text-secondary);">Load Archetype Presets:</span>
+            <div style="display:flex; gap:6px; margin-top:6px; flex-wrap:wrap;">
+              <button type="button" class="btn btn-outline btn-sm" onclick="setPreset('cotton')">Cotton (Semi-arid)</button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="setPreset('rice')">Rice (Wetland)</button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="setPreset('chickpea')">Chickpea (Dryland)</button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="setPreset('maize')">Maize (Temperate)</button>
             </div>
           </div>
 
           <form id="form-crop-advisory">
-            <div class="grid-3" style="gap: 12px;">
+            <div class="grid-3" style="gap: 10px;">
               <div class="form-group">
-                <label class="form-label">Nitrogen (N) <span style="font-size:0.75rem; color:var(--text-muted)">mg/kg</span></label>
+                <label class="form-label">Nitrogen (N) <span style="font-size:0.72rem; color:var(--text-muted)">mg/kg</span></label>
                 <input id="input-n" type="number" class="form-control" value="117" min="0" max="140" required>
               </div>
               <div class="form-group">
-                <label class="form-label">Phosphorus (P) <span style="font-size:0.75rem; color:var(--text-muted)">mg/kg</span></label>
+                <label class="form-label">Phosphorus (P) <span style="font-size:0.72rem; color:var(--text-muted)">mg/kg</span></label>
                 <input id="input-p" type="number" class="form-control" value="46" min="5" max="145" required>
               </div>
               <div class="form-group">
-                <label class="form-label">Potassium (K) <span style="font-size:0.75rem; color:var(--text-muted)">mg/kg</span></label>
+                <label class="form-label">Potassium (K) <span style="font-size:0.72rem; color:var(--text-muted)">mg/kg</span></label>
                 <input id="input-k" type="number" class="form-control" value="19" min="5" max="205" required>
               </div>
             </div>
 
-            <div class="grid-2" style="gap: 12px;">
+            <div class="grid-2" style="gap: 10px;">
               <div class="form-group">
-                <label class="form-label">Temperature (°C)</label>
+                <label class="form-label">Ambient Temp (°C)</label>
                 <input id="input-temp" type="number" step="0.1" class="form-control" value="24.0" required>
               </div>
               <div class="form-group">
@@ -99,7 +192,7 @@
               </div>
             </div>
 
-            <div class="grid-2" style="gap: 12px;">
+            <div class="grid-2" style="gap: 10px;">
               <div class="form-group">
                 <label class="form-label">Soil pH (0 - 14)</label>
                 <input id="input-ph" type="number" step="0.1" class="form-control" value="6.9" required>
@@ -110,86 +203,111 @@
               </div>
             </div>
 
-            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
-              🚀 Run Random Forest Crop Inference
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 6px;">
+              <span>Run Random Forest Crop Inference</span>
             </button>
           </form>
         </div>
 
-        <!-- ML Inference Output -->
+        <!-- ML Inference Output Card -->
         <div class="card" style="display:flex; flex-direction:column; justify-content:space-between;">
           <div>
             <div class="card-header">
               <span class="card-title">Recommendation Results</span>
-              <span id="pred-badge" class="badge-state badge-live">Ready</span>
+              <span id="pred-badge" class="badge-state badge-live">Verified Model</span>
             </div>
 
-            <div style="background: rgba(0,0,0,0.35); border-radius: var(--radius-md); padding: 24px; text-align: center; border: 1px solid var(--border-subtle); margin-top: 10px;">
-              <div style="font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.06em;">Top Optimal Crop Recommendation</div>
-              <div id="recommended-crop-name" style="font-size: 2.6rem; font-weight: 800; color: #34d399; margin: 10px 0; text-shadow: 0 0 20px rgba(52, 211, 153, 0.3);">
+            <!-- Primary Highlight Box with Pale Green Background -->
+            <div style="background: var(--pale-green); border: 1px solid #D1E7D5; border-radius: var(--radius-md); padding: 22px; text-align: center; margin-top: 8px;">
+              <div style="font-size: 0.76rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Top Optimal Crop Recommendation</div>
+              <div id="recommended-crop-name" style="font-size: 2.2rem; font-weight: 700; color: var(--primary-dark-green); margin: 8px 0;">
                 Cotton
               </div>
-              <div style="font-size: 0.95rem; color: var(--text-secondary);">
-                Model Confidence: <strong id="model-conf" style="color: #ffffff;">94.2%</strong>
+              <div style="font-size: 0.88rem; color: var(--text-secondary);">
+                Statistical Model Confidence: <strong id="model-conf" style="color: var(--primary-dark-green);">98.6%</strong>
               </div>
             </div>
 
-            <!-- Alternative Recommendations -->
-            <div style="margin-top: 20px;">
-              <div style="font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 10px;">
-                Runner-Up Crop Compatibility:
+            <!-- Runner-Up Crop Compatibility -->
+            <div style="margin-top: 18px;">
+              <div style="font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 8px;">
+                Alternative Compatible Cultivars:
               </div>
-              <div id="runner-ups-list" style="display:flex; flex-direction:column; gap:8px;">
-                <div style="display:flex; justify-content:space-between; padding:8px 12px; background:rgba(255,255,255,0.03); border-radius:6px;">
+              <div id="runner-ups-list" style="display:flex; flex-direction:column; gap:6px;">
+                <div style="display:flex; justify-content:space-between; padding:8px 12px; background:#FAFAFA; border:1px solid var(--border-color); border-radius:6px; font-size:0.85rem;">
                   <span>Jute</span>
-                  <span style="color:#38bdf8; font-weight:600;">4.8%</span>
+                  <span style="color: var(--primary-green); font-weight: 600;">1.4%</span>
                 </div>
               </div>
             </div>
           </div>
 
-          <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: var(--radius-sm); padding: 12px; margin-top: 20px; font-size: 0.78rem; color: #fbbf24; line-height: 1.5;">
-            <strong>Mandatory Agronomic Notice:</strong> This prediction is based on statistical macronutrient boundaries. It does not replace comprehensive soil pathology tests, water salinity checks, or market price assessments.
+          <!-- Mandatory Agronomic Limitations Notice -->
+          <div style="background: #FFFBEB; border: 1px solid #FDE68A; border-radius: var(--radius-md); padding: 12px 14px; margin-top: 18px; font-size: 0.76rem; color: #92400E; line-height: 1.5;">
+            <strong>Agronomic Policy Notice:</strong> Crop recommendation is generated using statistical macronutrient boundaries. It does not substitute for laboratory soil pathology tests, groundwater salinity analysis, or market economic viability assessments.
           </div>
         </div>
       </section>
 
-      <!-- Agronomic Irrigation Guidance Section -->
+      <!-- Irrigation Guidance Section -->
       <section class="card">
         <div class="card-header">
           <span class="card-title">Real-Time Soil Hydration & Evapotranspiration Advisory</span>
           <span id="irrigation-urgency-badge" class="badge-state badge-live">LOW URGENCY</span>
         </div>
 
-        <div class="grid-3" style="margin-top: 10px;">
-          <div style="background: rgba(0,0,0,0.3); padding: 18px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
-            <div style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase;">Headline Status</div>
-            <div id="advisor-headline" style="font-size: 1.15rem; font-weight: 700; color: #ffffff; margin-top: 6px;">
+        <div class="grid-3" style="margin-top: 6px;">
+          <div style="background: #FAFAFA; border: 1px solid var(--border-color); padding: 14px 16px; border-radius: var(--radius-md);">
+            <div style="font-size: 0.74rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Root Zone Hydration</div>
+            <div id="advisor-headline" style="font-size: 1.05rem; font-weight: 600; color: var(--text-primary); margin-top: 4px;">
               Optimal Soil Hydration
             </div>
           </div>
 
-          <div style="background: rgba(0,0,0,0.3); padding: 18px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
-            <div style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase;">Recommended Runtime</div>
-            <div id="advisor-runtime" style="font-size: 1.15rem; font-weight: 700; color: #34d399; margin-top: 6px;">
-              0 minutes (No cycle needed)
+          <div style="background: #FAFAFA; border: 1px solid var(--border-color); padding: 14px 16px; border-radius: var(--radius-md);">
+            <div style="font-size: 0.74rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Recommended Runtime</div>
+            <div id="advisor-runtime" style="font-size: 1.05rem; font-weight: 600; color: var(--primary-green); margin-top: 4px;">
+              0 minutes (No cycle required)
             </div>
           </div>
 
-          <div style="background: rgba(0,0,0,0.3); padding: 18px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
-            <div style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase;">Advisory Engine</div>
-            <div style="font-size: 1.15rem; font-weight: 700; color: #38bdf8; margin-top: 6px;">
+          <div style="background: #FAFAFA; border: 1px solid var(--border-color); padding: 14px 16px; border-radius: var(--radius-md);">
+            <div style="font-size: 0.74rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Decision Logic</div>
+            <div style="font-size: 1.05rem; font-weight: 600; color: var(--text-primary); margin-top: 4px;">
               FAO-56 Dual Kc Rules
             </div>
           </div>
         </div>
 
-        <div style="margin-top: 20px;">
-          <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px;">Actionable Advice:</div>
-          <ul id="advisor-points" style="padding-left: 20px; font-size: 0.9rem; color: #e2e8f0; line-height: 1.8;">
-            <li>Root zone moisture is presently within field capacity.</li>
+        <div style="margin-top: 16px;">
+          <div style="font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px;">Actionable Insights:</div>
+          <ul id="advisor-points" style="padding-left: 20px; font-size: 0.88rem; color: var(--text-primary); line-height: 1.7;">
+            <li>Root zone moisture is presently within nominal field capacity.</li>
             <li>No rainfall inhibition flags active in the 6-hour forecast window.</li>
           </ul>
+        </div>
+      </section>
+
+      <!-- Fertilizer & Disease Detection Cards (Spec Section 8) -->
+      <section class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Fertilizer Guidance</span>
+            <span class="badge-state badge-neutral">Agronomic Reference</span>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6;">
+            Fertilizer recommendations are derived from standard ICAR / FAO nutrient depletion balances. For black cotton soils under cotton cultivation, a split application of Nitrogen (50% basal, 25% vegetative, 25% boll formation) is recommended alongside targeted Potash replenishment.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Plant Pathology & Disease Detection</span>
+            <span class="badge-state badge-neutral">Optional Module</span>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6;">
+            Leaf disease classification is an optional extension requiring leaf macro-photographs and an evaluated CNN vision model (e.g. PlantVillage dataset). This feature will be activated once a high-resolution field camera is attached to the hardware node.
+          </p>
         </div>
       </section>
     </main>
@@ -254,9 +372,9 @@
         const runnerUpsContainer = document.getElementById('runner-ups-list');
         if (res.top_recommendations && res.top_recommendations.length > 1) {
           runnerUpsContainer.innerHTML = res.top_recommendations.slice(1).map(r => `
-            <div style="display:flex; justify-content:space-between; padding:8px 12px; background:rgba(255,255,255,0.03); border-radius:6px;">
+            <div style="display:flex; justify-content:space-between; padding:8px 12px; background:#FAFAFA; border:1px solid var(--border-color); border-radius:6px; font-size:0.85rem;">
               <span>${r.crop}</span>
-              <span style="color:#38bdf8; font-weight:600;">${r.confidence}%</span>
+              <span style="color: var(--primary-green); font-weight:600;">${r.confidence}%</span>
             </div>
           `).join('');
         }
@@ -284,8 +402,8 @@
 
         const urgencyBadge = document.getElementById('irrigation-urgency-badge');
         urgencyBadge.textContent = `${res.urgency} URGENCY`;
-        if (res.urgency === 'HIGH') urgencyBadge.className = 'badge-state badge-error';
-        else if (res.urgency === 'MODERATE') urgencyBadge.className = 'badge-state badge-stale';
+        if (res.urgency === 'HIGH') urgencyBadge.className = 'badge-state badge-danger';
+        else if (res.urgency === 'MODERATE') urgencyBadge.className = 'badge-state badge-warning';
         else urgencyBadge.className = 'badge-state badge-live';
 
         const pointsEl = document.getElementById('advisor-points');

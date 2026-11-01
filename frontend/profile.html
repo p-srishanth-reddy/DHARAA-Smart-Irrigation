@@ -4,47 +4,142 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Profile & Node Settings — DHARAA</title>
+  <meta name="description" content="Manage user preferences, measurement units, ESP32 hardware authentication tokens, and system alerts.">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <!-- Sidebar -->
+
+  <!-- Mobile Overlay -->
+  <div class="sidebar-overlay"></div>
+
+  <!-- Left Sidebar Navigation -->
   <aside class="sidebar">
     <div class="brand-container">
       <div class="brand-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+        </svg>
       </div>
       <div>
         <div class="brand-title">DHARAA</div>
-        <div class="brand-subtitle">Smart Irrigation</div>
+        <div class="brand-subtitle">Smart Irrigation System</div>
       </div>
     </div>
+
     <ul class="nav-menu">
-      <li><a href="/" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg><span class="nav-text">Dashboard</span></a></li>
-      <li><a href="/farms" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span class="nav-text">My Farms</span></a></li>
-      <li><a href="/schedules" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><span class="nav-text">Schedules</span></a></li>
-      <li><a href="/weather-view" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg><span class="nav-text">Weather Forecast</span></a></li>
-      <li><a href="/advisor-view" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg><span class="nav-text">AI Crop Advisor</span></a></li>
-      <li><a href="/analytics-view" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg><span class="nav-text">Analytics</span></a></li>
-      <li><a href="/profile-view" class="nav-link active"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><span class="nav-text">Profile & Node</span></a></li>
+      <li>
+        <a href="/" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+            <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+          </svg>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li>
+        <a href="/farms" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          <span>Farms</span>
+        </a>
+      </li>
+      <li>
+        <a href="/schedules" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <span>Schedules</span>
+        </a>
+      </li>
+      <li>
+        <a href="/weather-view" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>
+          </svg>
+          <span>Weather</span>
+        </a>
+      </li>
+      <li>
+        <a href="/advisor-view" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+          <span>AI Advisor</span>
+        </a>
+      </li>
+      <li>
+        <a href="/analytics-view" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+          <span>Analytics</span>
+        </a>
+      </li>
+      <li>
+        <a href="/profile-view" class="nav-link active">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span>Profile</span>
+        </a>
+      </li>
     </ul>
+
+    <!-- Footer Profile -->
+    <div class="sidebar-footer">
+      <div class="user-mini-card">
+        <div class="user-avatar">SR</div>
+        <div>
+          <div class="user-name">Srishanth Reddy</div>
+          <div class="user-role">Farm Operator</div>
+        </div>
+      </div>
+      <a href="/profile-view" style="color: var(--primary-dark-green);" title="Node Settings">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </a>
+    </div>
   </aside>
 
   <!-- Main Wrapper -->
   <div class="main-wrapper">
     <header class="topbar">
       <div class="topbar-left">
-        <h2 style="font-size: 1.15rem; font-weight: 700;">Account & ESP32 Node Security</h2>
+        <button id="btn-mobile-menu" class="btn-mobile-menu" aria-label="Toggle navigation menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+        <span class="topbar-page-title">Operator Profile & Security</span>
       </div>
+
       <div class="topbar-right">
-        <span class="device-status-pill online"><span class="pulse-dot"></span><span>Node Authentication Verified</span></span>
+        <span class="device-status-pill online">
+          <span class="status-dot"></span>
+          <span>Node Authentication Configured</span>
+        </span>
       </div>
     </header>
 
     <main class="content-container">
       <section class="page-header">
         <div>
-          <h1 class="page-title">Operator Settings & Field Alert Center</h1>
-          <p class="page-subtitle">Configure agricultural telemetry thresholds, hardware tokens, and view system notifications</p>
+          <h1 class="page-title">Operator Preferences & Security</h1>
+          <p class="page-subtitle">Configure agricultural telemetry thresholds, hardware tokens, and view system alerts.</p>
         </div>
       </section>
 
@@ -52,7 +147,7 @@
         <!-- Account Settings Card -->
         <div class="card">
           <div class="card-header">
-            <span class="card-title">Operator Profile</span>
+            <span class="card-title">Operator Profile & Measurement Units</span>
           </div>
 
           <form id="form-profile">
@@ -81,31 +176,32 @@
                 </select>
               </div>
             </div>
-            <button type="submit" class="btn btn-primary" style="margin-top:10px;">Save Profile Preferences</button>
+            <button type="submit" class="btn btn-primary btn-sm" style="margin-top:6px;">Save Profile Preferences</button>
           </form>
 
-          <hr style="border:none; border-top:1px solid var(--border-subtle); margin:24px 0;">
+          <hr style="border:none; border-top:1px solid var(--border-color); margin:20px 0;">
 
+          <!-- ESP32 Node Secret Token -->
           <div>
-            <div style="font-size:0.85rem; font-weight:600; color:var(--text-secondary); margin-bottom:8px;">ESP32 Node Authentication Key:</div>
+            <div style="font-size:0.82rem; font-weight:600; color:var(--text-primary); margin-bottom:6px;">ESP32 Node Authentication Secret Key:</div>
             <div style="display:flex; gap:8px;">
               <input type="password" id="dev-secret-box" class="form-control" value="dharaa-esp32-secret-2026" readonly>
-              <button class="btn btn-outline" onclick="toggleSecret()">Show</button>
+              <button class="btn btn-outline btn-sm" onclick="toggleSecret()">Show</button>
             </div>
             <div style="font-size:0.75rem; color:var(--text-muted); margin-top:6px;">
-              Paste this secret key into <code>esp32_firmware/config.py</code> under <code>DEVICE_KEY</code>.
+              Copy and paste this secret into <code>esp32_firmware/config.py</code> under <code>DEVICE_KEY</code>.
             </div>
           </div>
         </div>
 
-        <!-- Notification Alerts Center -->
+        <!-- Notification Alerts Center Card -->
         <div class="card">
           <div class="card-header">
             <span class="card-title">Real-Time Alerts & Safety Notifications</span>
-            <span id="notif-count" class="badge-state badge-live">Live</span>
+            <span id="notif-count" class="badge-state badge-neutral">Loading Alerts</span>
           </div>
 
-          <div id="notifs-container" style="display:flex; flex-direction:column; gap:10px; max-height:450px; overflow-y:auto; padding-right:6px;">
+          <div id="notifs-container" style="display:flex; flex-direction:column; gap:8px; max-height:420px; overflow-y:auto; padding-right:4px;">
             <!-- Rendered dynamically -->
           </div>
         </div>
@@ -132,14 +228,15 @@
         }
 
         container.innerHTML = notifs.map(n => {
-          const color = n.severity === 'critical' ? '#f43f5e' : (n.severity === 'success' ? '#10b981' : '#38bdf8');
+          const badgeClass = n.severity === 'critical' ? 'badge-danger' : (n.severity === 'success' ? 'badge-success' : 'badge-info');
+          const borderClass = n.severity === 'critical' ? '#FECACA' : (n.severity === 'success' ? '#BBF7D0' : '#BFDBFE');
           return `
-            <div style="background:rgba(0,0,0,0.3); border-left:3px solid ${color}; border-radius:6px; padding:12px 14px;">
+            <div style="background:#FAFAFA; border:1px solid ${borderClass}; border-radius:var(--radius-md); padding:10px 12px;">
               <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-size:0.72rem; text-transform:uppercase; color:${color}; font-weight:700;">${n.severity}</span>
-                <span style="font-size:0.75rem; color:var(--text-muted);">${n.created_at}</span>
+                <span class="badge-state ${badgeClass}">${n.severity}</span>
+                <span style="font-size:0.72rem; color:var(--text-muted);">${n.created_at}</span>
               </div>
-              <div style="font-size:0.88rem; color:#e2e8f0; margin-top:4px; line-height:1.4;">${n.message}</div>
+              <div style="font-size:0.85rem; color:var(--text-primary); margin-top:4px; line-height:1.4;">${n.message}</div>
             </div>
           `;
         }).join('');
@@ -156,7 +253,7 @@
           timezone: document.getElementById('prof-timezone').value,
           units: document.getElementById('prof-units').value
         });
-        showToast("Profile preferences updated", "success");
+        showToast("Profile preferences updated successfully", "success");
       } catch (err) {
         showToast("Update failed: " + err.message, "error");
       }

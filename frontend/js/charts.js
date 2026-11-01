@@ -1,14 +1,17 @@
-// DHARAA Chart.js Integration
+// DHARAA Chart.js Integration - Clean Nature-Inspired Light Theme
+// Uses centralized color palette: green #22A447, blue #3B82F6, orange #F59E0B
 
-// Chart.js global dark theme defaults
 if (window.Chart) {
-  Chart.defaults.color = '#94a3b8';
-  Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
-  Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(15, 23, 42, 0.9)';
-  Chart.defaults.plugins.tooltip.borderColor = 'rgba(255, 255, 255, 0.1)';
+  Chart.defaults.color = '#4B5563';
+  Chart.defaults.font.family = "'Inter', sans-serif";
+  Chart.defaults.font.size = 12;
+  Chart.defaults.plugins.tooltip.backgroundColor = '#1F2937';
+  Chart.defaults.plugins.tooltip.titleColor = '#F9FAFB';
+  Chart.defaults.plugins.tooltip.bodyColor = '#F9FAFB';
+  Chart.defaults.plugins.tooltip.borderColor = '#E5E7EB';
   Chart.defaults.plugins.tooltip.borderWidth = 1;
-  Chart.defaults.plugins.tooltip.padding = 12;
-  Chart.defaults.plugins.tooltip.cornerRadius = 8;
+  Chart.defaults.plugins.tooltip.padding = 10;
+  Chart.defaults.plugins.tooltip.cornerRadius = 6;
 }
 
 function createMoistureChart(canvasId, historyData = []) {
@@ -25,14 +28,14 @@ function createMoistureChart(canvasId, historyData = []) {
       datasets: [{
         label: 'Soil Moisture (%)',
         data: moistures,
-        borderColor: '#10b981',
-        backgroundColor: 'rgba(16, 185, 129, 0.12)',
-        borderWidth: 2.5,
+        borderColor: '#22A447',
+        backgroundColor: 'rgba(34, 164, 71, 0.08)',
+        borderWidth: 2,
         fill: true,
-        tension: 0.4,
+        tension: 0.35,
         pointRadius: 2,
-        pointHoverRadius: 6,
-        pointBackgroundColor: '#10b981'
+        pointHoverRadius: 5,
+        pointBackgroundColor: '#22A447'
       }]
     },
     options: {
@@ -42,7 +45,7 @@ function createMoistureChart(canvasId, historyData = []) {
         y: {
           min: 0,
           max: 100,
-          grid: { color: 'rgba(255, 255, 255, 0.05)' },
+          grid: { color: '#F3F4F6' },
           ticks: { callback: v => v + '%' }
         },
         x: {
@@ -69,8 +72,8 @@ function createWeatherForecastChart(canvasId, times, temps, rainProbs) {
           type: 'line',
           label: 'Temperature (°C)',
           data: temps,
-          borderColor: '#f59e0b',
-          backgroundColor: '#f59e0b',
+          borderColor: '#F59E0B',
+          backgroundColor: '#F59E0B',
           yAxisID: 'yTemp',
           tension: 0.35,
           borderWidth: 2,
@@ -80,8 +83,8 @@ function createWeatherForecastChart(canvasId, times, temps, rainProbs) {
           type: 'bar',
           label: 'Precipitation Probability (%)',
           data: rainProbs,
-          backgroundColor: 'rgba(6, 182, 212, 0.45)',
-          borderColor: '#06b6d4',
+          backgroundColor: 'rgba(59, 130, 246, 0.55)',
+          borderColor: '#3B82F6',
           borderWidth: 1,
           borderRadius: 4,
           yAxisID: 'yRain'
@@ -95,7 +98,7 @@ function createWeatherForecastChart(canvasId, times, temps, rainProbs) {
         yTemp: {
           type: 'linear',
           position: 'left',
-          grid: { color: 'rgba(255, 255, 255, 0.05)' },
+          grid: { color: '#F3F4F6' },
           ticks: { callback: v => v + '°C' }
         },
         yRain: {

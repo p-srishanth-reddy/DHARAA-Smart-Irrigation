@@ -3,327 +3,374 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DHARAA — Smart Irrigation & Agronomic IoT Platform</title>
-  <meta name="description" content="IoT Smart Irrigation System with ESP32 MicroPython, Capacitive Sensors, AI Crop Advisor & Real-time Telemetry.">
+  <title>DHARAA — Smart Irrigation Dashboard</title>
+  <meta name="description" content="Professional agricultural IoT smart irrigation platform with real-time telemetry, automated pump safety, and agronomic intelligence.">
   <link rel="stylesheet" href="/css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-  <!-- Navigation Sidebar -->
+  <!-- Mobile Sidebar Backdrop Overlay -->
+  <div class="sidebar-overlay"></div>
+
+  <!-- Left Sidebar Navigation -->
   <aside class="sidebar">
     <div class="brand-container">
       <div class="brand-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
         </svg>
       </div>
       <div>
         <div class="brand-title">DHARAA</div>
-        <div class="brand-subtitle">Smart Irrigation</div>
+        <div class="brand-subtitle">Smart Irrigation System</div>
       </div>
     </div>
 
     <ul class="nav-menu">
       <li>
         <a href="/" class="nav-link active">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="3" width="7" height="7"></rect>
-            <rect x="14" y="3" width="7" height="7"></rect>
-            <rect x="14" y="14" width="7" height="7"></rect>
-            <rect x="3" y="14" width="7" height="7"></rect>
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+            <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
           </svg>
-          <span class="nav-text">Dashboard</span>
+          <span>Dashboard</span>
         </a>
       </li>
       <li>
         <a href="/farms" class="nav-link">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
             <polyline points="9 22 9 12 15 12 15 22"></polyline>
           </svg>
-          <span class="nav-text">My Farms</span>
+          <span>Farms</span>
         </a>
       </li>
       <li>
         <a href="/schedules" class="nav-link">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <polyline points="12 6 12 12 16 14"></polyline>
           </svg>
-          <span class="nav-text">Schedules</span>
+          <span>Schedules</span>
         </a>
       </li>
       <li>
         <a href="/weather-view" class="nav-link">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>
           </svg>
-          <span class="nav-text">Weather Forecast</span>
+          <span>Weather</span>
         </a>
       </li>
       <li>
         <a href="/advisor-view" class="nav-link">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
             <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
             <line x1="12" y1="22.08" x2="12" y2="12"></line>
           </svg>
-          <span class="nav-text">AI Crop Advisor</span>
+          <span>AI Advisor</span>
         </a>
       </li>
       <li>
         <a href="/analytics-view" class="nav-link">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="20" x2="18" y2="10"></line>
             <line x1="12" y1="20" x2="12" y2="4"></line>
             <line x1="6" y1="20" x2="6" y2="14"></line>
           </svg>
-          <span class="nav-text">Analytics</span>
+          <span>Analytics</span>
         </a>
       </li>
       <li>
         <a href="/profile-view" class="nav-link">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
             <circle cx="12" cy="7" r="4"></circle>
           </svg>
-          <span class="nav-text">Profile & Node</span>
+          <span>Profile</span>
         </a>
       </li>
     </ul>
 
+    <!-- Bottom Operator Info -->
     <div class="sidebar-footer">
-      <span>DHARAA Core v1.0</span>
-      <span style="color: var(--emerald-primary);">ESP32 Ready</span>
+      <div class="user-mini-card">
+        <div class="user-avatar">SR</div>
+        <div>
+          <div class="user-name">Srishanth Reddy</div>
+          <div class="user-role">Farm Operator</div>
+        </div>
+      </div>
+      <a href="/profile-view" style="color: var(--text-muted); text-decoration: none;" title="Node Settings">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </a>
     </div>
   </aside>
 
   <!-- Main Wrapper -->
   <div class="main-wrapper">
-    <!-- Topbar -->
+    <!-- Header -->
     <header class="topbar">
       <div class="topbar-left">
-        <div class="farm-badge">
-          <span>🌾 Active Farm:</span>
-          <select id="farm-select" style="background:transparent; border:none; color:#ffffff; font-weight:600; font-family:inherit; outline:none; cursor:pointer;">
-            <option value="1">DHARAA Experimental Farm</option>
-          </select>
-        </div>
+        <button id="btn-mobile-menu" class="btn-mobile-menu" aria-label="Toggle navigation menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+        <span class="topbar-page-title">Farm Dashboard</span>
       </div>
 
       <div class="topbar-right">
+        <!-- Farm Selector -->
+        <div class="farm-selector-wrapper">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary-green)" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          </svg>
+          <select id="farm-select">
+            <option value="1">DHARAA Experimental Farm (Cotton)</option>
+          </select>
+        </div>
+
+        <!-- Notification Bell -->
+        <a href="/profile-view" class="notification-bell-btn" title="View System Notifications">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          <span class="notification-dot"></span>
+        </a>
+
+        <!-- Device Connectivity Status Pill -->
         <div id="device-status-pill" class="device-status-pill online">
-          <span class="pulse-dot"></span>
-          <span id="device-status-text">Connecting to Telemetry...</span>
+          <span class="status-dot"></span>
+          <span id="device-status-text">Checking Telemetry...</span>
         </div>
       </div>
     </header>
 
-    <!-- Content Container -->
+    <!-- Main Content Container -->
     <main class="content-container">
-      <!-- Page Header -->
+
+      <!-- 1. Welcome Section -->
       <section class="page-header">
         <div>
-          <h1 class="page-title">Live Field Telemetry & Actuation</h1>
-          <p class="page-subtitle">ESP32 MicroPython Node: <strong id="device-name-text">ESP32 Field Node 01</strong></p>
+          <h1 class="page-title">Farm Dashboard</h1>
+          <p class="page-subtitle">Monitor your farm and manage irrigation in real time.</p>
         </div>
-        <div class="btn-group">
-          <a href="/weather-view" class="btn btn-outline">Check Forecast</a>
-          <a href="/advisor-view" class="btn btn-primary">AI Advisory</a>
+        <div style="font-size: 0.82rem; color: var(--text-secondary); background: #FFFFFF; padding: 6px 14px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+          Active Node: <strong id="device-name-text" style="color: var(--primary-dark-green);">ESP32 Field Node 01</strong>
         </div>
       </section>
 
-      <!-- 4 Sensor Metric Cards -->
+      <!-- 2. Responsive Summary Metric Cards -->
       <section class="grid-4">
-        <!-- 1. Capacitive Soil Moisture -->
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
-                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
-              </svg>
-              Soil Moisture
-            </span>
-            <span id="badge-moisture" class="badge-state badge-live">Live Calibrated</span>
+        <!-- Soil Moisture Card -->
+        <div class="card metric-card">
+          <div class="metric-icon-box green">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+            </svg>
           </div>
-          <div id="val-moisture" class="card-value">
-            --<span class="card-unit">%</span>
-          </div>
-          <div class="progress-bar-container">
-            <div id="bar-moisture" class="progress-bar-fill" style="width: 0%;"></div>
-          </div>
-          <div class="card-footer">
-            <span>Range: 0 - 100% (Capacitive)</span>
-            <span>Target: 35% - 45%</span>
+          <div class="metric-content">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div class="metric-label">Soil Moisture</div>
+              <span id="badge-moisture" class="badge-state badge-live">Normal</span>
+            </div>
+            <div id="val-moisture" class="card-value">
+              --<span class="card-unit">%</span>
+            </div>
+            <div class="progress-bar-container">
+              <div id="bar-moisture" class="progress-bar-fill" style="width: 0%;"></div>
+            </div>
           </div>
         </div>
 
-        <!-- 2. Ambient Temperature & Humidity -->
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2">
-                <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path>
-              </svg>
-              Microclimate (DHT22)
-            </span>
-            <span class="badge-state badge-live">Live</span>
+        <!-- Temperature Card -->
+        <div class="card metric-card">
+          <div class="metric-icon-box orange">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path>
+            </svg>
           </div>
-          <div class="card-value" style="display:flex; justify-content:space-between; align-items:baseline;">
-            <div id="val-temperature">--<span class="card-unit">°C</span></div>
-            <div id="val-humidity" style="font-size: 1.6rem; color: #94a3b8;">--<span class="card-unit">% RH</span></div>
-          </div>
-          <div class="card-footer" style="margin-top: 26px;">
-            <span>Ambient Field Temp</span>
-            <span>Relative Humidity</span>
+          <div class="metric-content">
+            <div class="metric-label">Ambient Temp (DHT22)</div>
+            <div id="val-temperature" class="card-value">
+              --<span class="card-unit">°C</span>
+            </div>
+            <div style="font-size: 0.76rem; color: var(--text-muted); margin-top: 6px;">Field microclimate</div>
           </div>
         </div>
 
-        <!-- 3. Rain Sensor -->
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2">
-                <path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"></path>
-                <line x1="8" y1="19" x2="8" y2="21"></line>
-                <line x1="12" y1="17" x2="12" y2="23"></line>
-                <line x1="16" y1="19" x2="16" y2="21"></line>
-              </svg>
-              Surface Rain State
-            </span>
-            <span id="badge-rain" class="badge-state badge-live">No Rain</span>
+        <!-- Relative Humidity Card -->
+        <div class="card metric-card">
+          <div class="metric-icon-box blue">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>
+            </svg>
           </div>
-          <div id="val-rain" class="card-value" style="font-size: 1.8rem; color: #94a3b8;">
-            Dry Field
-          </div>
-          <div class="card-footer" style="margin-top: 26px;">
-            <span>Digital surface detector</span>
-            <span>Policy: Inhibit on wet</span>
+          <div class="metric-content">
+            <div class="metric-label">Relative Humidity</div>
+            <div id="val-humidity" class="card-value">
+              --<span class="card-unit">%</span>
+            </div>
+            <div style="font-size: 0.76rem; color: var(--text-muted); margin-top: 6px;">Air moisture content</div>
           </div>
         </div>
 
-        <!-- 4. Water Flow Sensor -->
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#14b8a6" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12 6 12 12 14 14"></polyline>
-              </svg>
-              Water Flow Pulse
-            </span>
-            <span class="badge-state badge-live">Hardware IRQ</span>
+        <!-- Pump Status Card -->
+        <div class="card metric-card">
+          <div class="metric-icon-box green">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
           </div>
-          <div id="val-flow" class="card-value" style="font-size: 1.6rem;">
-            0 <span class="card-unit">pulses (~0.00 L)</span>
-          </div>
-          <div class="card-footer" style="margin-top: 26px;">
-            <span>YF-S201 Hall Interrupt</span>
-            <span>Factor: ~450 p/L</span>
+          <div class="metric-content">
+            <div class="metric-label">Pump Operational State</div>
+            <div id="state-reported" class="card-value" style="color: var(--text-muted);">
+              OFF
+            </div>
+            <div style="font-size: 0.76rem; color: var(--text-muted); margin-top: 6px;">Relay: GPIO 26</div>
           </div>
         </div>
       </section>
 
-      <!-- Center Row: Pump Station & Rule Engine -->
+      <!-- 3. Sensor Monitoring Details & Irrigation Actuation Station -->
       <section class="grid-2">
-        <!-- Pump Actuation Station -->
+        <!-- Sensor Monitoring Section -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary-green)" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              Sensor Diagnostics & Monitoring
+            </span>
+            <span class="badge-state badge-live">Hardware Active</span>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 6px;">
+            <!-- Surface Rain Sensor Row -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; background: #FAFAFA; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="color: var(--info); font-size: 1.2rem;">🌧</span>
+                <div>
+                  <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">Surface Rain Sensor (GPIO 14)</div>
+                  <div style="font-size: 0.74rem; color: var(--text-muted);">Automated rain inhibit safety policy</div>
+                </div>
+              </div>
+              <div style="text-align: right;">
+                <div id="val-rain" style="font-weight: 600; font-size: 0.88rem; color: var(--text-secondary);">Dry Field</div>
+                <span id="badge-rain" class="badge-state badge-neutral">No Rain</span>
+              </div>
+            </div>
+
+            <!-- Water Flow Sensor Row -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; background: #FAFAFA; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="color: var(--primary-green); font-size: 1.2rem;">💧</span>
+                <div>
+                  <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">Water Flow Sensor (YF-S201)</div>
+                  <div style="font-size: 0.74rem; color: var(--text-muted);">Rising-edge hardware interrupt counter</div>
+                </div>
+              </div>
+              <div style="text-align: right;">
+                <div id="val-flow" style="font-weight: 600; font-size: 0.88rem; color: var(--text-primary);">0 pulses (~0.00 L)</div>
+                <span class="badge-state badge-neutral">Calibrated: 450 p/L</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Agronomic Rule Engine Summary -->
+          <div class="rule-callout">
+            <div class="rule-callout-title">Automated Rule Engine Evaluation:</div>
+            <div id="rule-summary-text" class="rule-callout-text">
+              Evaluating live field telemetry...
+            </div>
+          </div>
+        </div>
+
+        <!-- Irrigation Control Card -->
         <div class="card pump-station-card">
           <div class="card-header">
-            <span class="card-title">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+            <span class="card-title" style="color: var(--primary-dark-green);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
               </svg>
-              5V Pump Actuation Station
+              Irrigation Actuation Station
             </span>
-            <span class="badge-state badge-live">Relay Protected</span>
+            <span class="badge-state badge-live">Safety Guarded</span>
           </div>
 
+          <!-- Indicator Box -->
           <div class="pump-indicator-box">
             <div class="indicator-item">
               <div class="indicator-label">Requested State</div>
               <div id="state-requested" class="indicator-state state-off">OFF</div>
             </div>
-            <div style="width: 1px; height: 40px; background: var(--border-subtle);"></div>
+            <div style="width: 1px; height: 36px; background: #D1E7D5;"></div>
             <div class="indicator-item">
               <div class="indicator-label">Reported Hardware State</div>
-              <div id="state-reported" class="indicator-state state-off">OFF</div>
+              <div id="state-reported-mirror" class="indicator-state state-off">OFF</div>
             </div>
-            <div style="width: 1px; height: 40px; background: var(--border-subtle);"></div>
+            <div style="width: 1px; height: 36px; background: #D1E7D5;"></div>
             <div class="indicator-item">
               <div class="indicator-label">Active Session Runtime</div>
-              <div id="pump-runtime" class="indicator-state" style="color: #38bdf8;">0m 00s</div>
+              <div id="pump-runtime" class="indicator-state" style="color: var(--primary-dark-green);">0m 00s</div>
             </div>
           </div>
 
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; flex-wrap:wrap; gap:12px;">
+          <!-- Actuation Buttons -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 18px; flex-wrap: wrap; gap: 10px;">
             <div class="btn-group">
-              <button id="btn-pump-on" class="btn btn-primary" title="Turn Pump ON">
-                <span>▶ Start Pump (ON)</span>
+              <button id="btn-pump-on" class="btn btn-primary" title="Turn Pump ON with pre-flight check">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                <span>Start Pump (ON)</span>
               </button>
               <button id="btn-pump-off" class="btn btn-outline" title="Turn Pump OFF">
-                <span>⏹ Stop Pump (OFF)</span>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect></svg>
+                <span>Stop Pump (OFF)</span>
               </button>
             </div>
 
-            <button id="btn-emergency-stop" class="btn btn-danger" title="Immediate hardware lock out">
-              <span>🚨 EMERGENCY STOP</span>
+            <button id="btn-emergency-stop" class="btn btn-danger" title="Immediate hardware lockout">
+              <span>🚨 Emergency Stop</span>
             </button>
           </div>
 
-          <div class="card-footer" style="margin-top: 16px;">
-            <span>Local 5-min hardware timeout watchdog active</span>
-            <span>Relay: GPIO 26</span>
-          </div>
-        </div>
-
-        <!-- AI & Rule Summary -->
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2">
-                <circle cx="12" cy="12" r="3"></circle>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-              </svg>
-              DHARAA Agronomic Rule Engine
-            </span>
-            <span class="badge-state badge-live">Active Policy</span>
-          </div>
-
-          <div style="background: rgba(0,0,0,0.3); border-radius: var(--radius-md); padding: 18px; border: 1px solid var(--border-subtle); margin: 12px 0;">
-            <div style="font-size: 0.82rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">Evaluation State:</div>
-            <div id="rule-summary-text" style="font-size: 1.05rem; font-weight: 600; line-height: 1.5; color: #e2e8f0;">
-              Evaluating live field telemetry...
-            </div>
-          </div>
-
-          <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; margin-top: 14px;">
-            <strong style="color: #ffffff;">Hysteresis Parameters:</strong>
-            <ul style="padding-left: 20px; margin-top: 6px;">
-              <li>Start Threshold: <strong style="color:#f59e0b">&lt; 35.0% Moisture</strong></li>
-              <li>Recovery Target: <strong style="color:#10b981">&ge; 45.0% Moisture</strong></li>
-              <li>Rain Inhibit: <strong style="color:#38bdf8">Immediate shutdown upon precipitation</strong></li>
-            </ul>
+          <div class="card-footer">
+            <span>Hysteresis: Start &lt; 35% | Stop &ge; 45%</span>
+            <span>Max Single Runtime: 5 min</span>
           </div>
         </div>
       </section>
 
-      <!-- Soil Moisture Trend Chart & Irrigation History -->
+      <!-- 4. Moisture Trend Chart & Recent Irrigation Activity -->
       <section class="grid-2">
         <div class="card">
           <div class="card-header">
-            <span class="card-title">Soil Moisture Trend (Real-time Window)</span>
+            <span class="card-title">Soil Moisture Trend (Real-Time Window)</span>
             <span class="badge-state badge-live">Live Series</span>
           </div>
-          <div style="height: 250px; position: relative;">
+          <div style="height: 260px; position: relative;">
             <canvas id="chart-moisture"></canvas>
           </div>
         </div>
 
         <div class="card">
           <div class="card-header">
-            <span class="card-title">Recent Irrigation Events</span>
-            <a href="/analytics-view" style="font-size: 0.8rem; color: var(--emerald-primary); text-decoration: none;">View All &rarr;</a>
+            <span class="card-title">Recent Irrigation Activity</span>
+            <a href="/analytics-view" style="font-size: 0.8rem; color: var(--primary-green); text-decoration: none; font-weight: 600;">View Full History &rarr;</a>
           </div>
           <div class="table-responsive">
             <table class="table">
@@ -331,14 +378,14 @@
                 <tr>
                   <th>Time</th>
                   <th>Status</th>
-                  <th>Source</th>
-                  <th>Volume</th>
+                  <th>Trigger</th>
+                  <th>Est. Volume</th>
                   <th>Stop Reason</th>
                 </tr>
               </thead>
               <tbody id="events-table-body">
                 <tr>
-                  <td colspan="5" style="text-align: center; color: var(--text-muted);">Loading events...</td>
+                  <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 24px;">Loading activity log...</td>
                 </tr>
               </tbody>
             </table>
@@ -346,37 +393,38 @@
         </div>
       </section>
 
-      <!-- Honest Hardware Availability Matrix per Project Specification -->
-      <section class="card" style="background: rgba(15, 23, 42, 0.5);">
+      <!-- 5. Kit Hardware Availability Matrix (Honest Project Specification) -->
+      <section class="card">
         <div class="card-header">
-          <span class="card-title" style="color: var(--text-muted);">
-            Kit Hardware Availability Matrix (No Fabricated Readings)
+          <span class="card-title" style="color: var(--text-primary);">
+            Hardware Kit Component Availability Matrix
           </span>
-          <span class="badge-state badge-unmonitored">Project Standard</span>
+          <span class="badge-state badge-neutral">Spec Standard</span>
         </div>
-        <div class="grid-4" style="margin-top: 10px;">
-          <div style="background: rgba(0,0,0,0.25); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
-            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Tank Water Level</div>
-            <div style="font-weight: 700; color: #94a3b8; margin-top: 4px;">Not Monitored</div>
-            <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 4px;">Requires ultrasonic sensor</div>
+        <div class="hardware-matrix-grid">
+          <div class="hardware-matrix-box">
+            <div class="hardware-matrix-label">Water Tank Level</div>
+            <div class="hardware-matrix-status" style="color: var(--text-secondary);">Not Monitored</div>
+            <div class="hardware-matrix-note">Requires ultrasonic level sensor</div>
           </div>
-          <div style="background: rgba(0,0,0,0.25); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
-            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Power / Electricity</div>
-            <div style="font-weight: 700; color: #94a3b8; margin-top: 4px;">Not Monitored</div>
-            <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 4px;">Requires current sensor</div>
+          <div class="hardware-matrix-box">
+            <div class="hardware-matrix-label">Power & Electricity</div>
+            <div class="hardware-matrix-status" style="color: var(--text-secondary);">Not Monitored</div>
+            <div class="hardware-matrix-note">Requires dedicated current sensor</div>
           </div>
-          <div style="background: rgba(0,0,0,0.25); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
-            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Soil NPK & pH</div>
-            <div style="font-weight: 700; color: #94a3b8; margin-top: 4px;">Manual / Lab Input</div>
-            <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 4px;">Used in AI Advisor form</div>
+          <div class="hardware-matrix-box">
+            <div class="hardware-matrix-label">Soil NPK & pH</div>
+            <div class="hardware-matrix-status" style="color: var(--primary-dark-green);">Lab / Sourced Input</div>
+            <div class="hardware-matrix-note">Configured via AI Advisor form</div>
           </div>
-          <div style="background: rgba(0,0,0,0.25); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
-            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Multi-Depth Moisture</div>
-            <div style="font-weight: 700; color: #94a3b8; margin-top: 4px;">Single Root Zone</div>
-            <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 4px;">Depth: 15cm capacitive</div>
+          <div class="hardware-matrix-box">
+            <div class="hardware-matrix-label">Multi-Depth Moisture</div>
+            <div class="hardware-matrix-status" style="color: var(--primary-dark-green);">Root Zone Only</div>
+            <div class="hardware-matrix-note">Single 15cm capacitive probe</div>
           </div>
         </div>
       </section>
+
     </main>
   </div>
 
