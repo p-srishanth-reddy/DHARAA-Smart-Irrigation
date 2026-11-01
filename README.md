@@ -61,6 +61,22 @@ The simulator generates live capacitive moisture readings, simulates soil drying
 
 ---
 
+## 🕒 Automatic Schedule Execution Service
+The DHARAA Flask backend includes a non-blocking background scheduler daemon (`backend/services/scheduler_service.py`) running every 15 seconds:
+- **Timezone Awareness:** Uses the farm owner's configured timezone (`users.timezone`, e.g. `Asia/Kolkata`) to compare daily `start_time` (24h `HH:MM`).
+- **Single Execution per Occurrence:** Tracks execution via `last_run_date` (`YYYY-MM-DD`). A schedule runs at most once per scheduled daily occurrence.
+- **Restart Policy:** Skips missed occurrences after server downtime rather than unexpectedly activating pumps. If a schedule's start time passed while the server was down, it is recorded as `skipped: missed occurrence during downtime`.
+- **Pre-Flight Safety Protocol:** Before queueing a pump `ON` command, the scheduler verifies:
+  1. Associated ESP32 node is online (last telemetry < 120s old).
+  2. Soil moisture sensor health is `'OK'`.
+  3. Surface rain sensor detects dry conditions (`rain == 0`).
+  4. Cooldown elapsed (>= 600s since previous session ended).
+  5. Current soil moisture is below the target threshold.
+  6. Runtime cap (<= 300s default, max 600s hard cap).
+- **Execution Tracking & Logs:** Logs skip reasons (offline, rain, cooldown, target met, downtime) and updates `schedules.last_run_status` and the user notifications feed.
+
+---
+
 ## 🛡️ Safety & Reliability Protocols
 1. **Startup OFF Guarantee:** The relay GPIO is set to LOW immediately upon boot before any networking or sensor routines execute.
 2. **Local Hardware Watchdog:** The 5-minute single session runtime limit is enforced in local firmware. Even if Wi-Fi or backend server crashes, the ESP32 turns the pump OFF locally.

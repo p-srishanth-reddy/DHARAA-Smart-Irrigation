@@ -1,8 +1,10 @@
 import os
+import atexit
 from flask import Flask, send_from_directory, jsonify
 from flask_cors import CORS
 
 from backend.database import init_db
+from backend.services.scheduler_service import dharaa_scheduler
 from backend.routes.auth import auth_bp
 from backend.routes.telemetry import telemetry_bp
 from backend.routes.farms import farms_bp
@@ -21,6 +23,10 @@ def create_app():
 
     # Initialize Database Schema & Seed Data
     init_db()
+
+    # Launch Automatic Schedule Execution Background Service
+    dharaa_scheduler.start()
+    atexit.register(dharaa_scheduler.stop)
 
     # Register API Blueprints
     app.register_blueprint(auth_bp)
@@ -75,6 +81,11 @@ def create_app():
             "status": "healthy",
             "system": "DHARAA Smart Irrigation Platform",
             "version": "1.0.0",
+            "scheduler": {
+                "active": dharaa_scheduler.is_running(),
+                "interval_seconds": dharaa_scheduler.check_interval,
+                "last_check": dharaa_scheduler.last_check_at
+            },
             "endpoints": [
                 "/api/telemetry", "/api/telemetry/latest", "/api/telemetry/history",
                 "/api/farms", "/api/schedules", "/api/irrigation/command",

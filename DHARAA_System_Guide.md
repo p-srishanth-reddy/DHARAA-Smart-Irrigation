@@ -132,9 +132,24 @@ Manages all landholdings and farm properties:
 ---
 
 ### 3. Schedules (`/schedules`)
-Configures automated recurring irrigation sessions:
-- **Pre-Flight Safety Verification Banner:** Summarizes the 4 safety rules checked before any schedule runs (Device Online, Rain Inhibit, Cooldown Safe, Local Watchdog Limit).
-- **Configured Schedules Table:** Lists all schedules with description, target farm, start time (24h format), target soil moisture (%), runtime cap (seconds), active/paused status, and delete action.
+Configures automated recurring irrigation sessions managed by the background execution engine:
+- **Automatic Execution Engine:** A non-blocking daemon thread checks active schedules every 15 seconds in SQLite without delaying API traffic.
+- **Timezone Awareness:** Uses the farm owner's configured timezone (`users.timezone`, e.g. `Asia/Kolkata`) when comparing daily start times (`HH:MM`).
+- **Single Run Per Occurrence:** Tracks runs using `last_run_date` (`YYYY-MM-DD`). A schedule triggers at most once per scheduled daily occurrence.
+- **Restart Policy:** Skips missed occurrences during server downtime or restarts rather than starting unexpected irrigation sessions hours later.
+- **Pre-Flight Safety Verification Banner:** Displays the live state of the background scheduler daemon (`Scheduler: Active (15s checks)`) and safety policies.
+- **Comprehensive Pre-Flight Safety Checks:** Before queueing the pump `ON` command, the engine verifies:
+  1. *ESP32 Device Online:* Telemetry heartbeat received within the last 120 seconds.
+  2. *Sensor Health:* Capacitive moisture reading valid with status `'OK'`.
+  3. *Rain Invalidation:* Surface rain sensor reports dry field (`rain == 0`).
+  4. *Thermal Cooldown:* At least 600s elapsed since the last irrigation event completed.
+  5. *Target Moisture:* Current moisture is below target (skips if soil is already wet).
+  6. *Runtime Cap:* Enforces requested runtime limit (max 600s hard safety cap).
+- **Execution & Safety Status Badges:** Visual indicators showing *Executed Today* (with moisture & runtime details), *Skipped* (with specific reason such as rain, cooldown, offline, or missed during downtime), or *Pending*.
+- **Interactive Operator Actions:**
+  - **"Run Now" (Test Pre-Flight):** Evaluates all safety rules and triggers the pump immediately for testing without waiting for the clock.
+  - **"Re-arm":** Clears today's execution flag so the schedule can run again today if needed.
+  - **"Delete":** Permanently removes the schedule.
 - **"Create Schedule" Modal:** Allows setting daily start times (e.g. `06:00` for pre-dawn watering), target moisture recovery level (e.g. `45%`), runtime limits, and agronomic field notes.
 
 ---

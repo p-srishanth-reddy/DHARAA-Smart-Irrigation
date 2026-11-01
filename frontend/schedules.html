@@ -148,13 +148,16 @@
         <div class="card-header" style="margin-bottom: 8px;">
           <span class="card-title" style="color: var(--primary-dark-green);">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-            Automated Pre-Flight Safety Protocol
+            Automated Pre-Flight Safety &amp; Restart Policy Protocol
           </span>
-          <span class="badge-state badge-live">Hardware Enforced</span>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <span id="scheduler-badge" class="badge-state badge-live">Scheduler: Active (15s checks)</span>
+            <span class="badge-state" style="background: #E0E7FF; color: #3730A3; border: 1px solid #C7D2FE;">Restart: Skip Missed</span>
+          </div>
         </div>
         <div class="grid-4" style="font-size: 0.82rem; color: var(--text-primary); line-height: 1.5;">
           <div><strong style="color: var(--primary-dark-green);">✓ Node Online:</strong> Last-seen ping &lt; 120s</div>
-          <div><strong style="color: var(--primary-dark-green);">✓ Rain Inhibit:</strong> DO pin dry verification</div>
+          <div><strong style="color: var(--primary-dark-green);">✓ Rain Inhibit:</strong> DO sensor dry verification</div>
           <div><strong style="color: var(--primary-dark-green);">✓ Cooldown:</strong> 10-min interval between runs</div>
           <div><strong style="color: var(--primary-dark-green);">✓ Local Watchdog:</strong> 300s hardcap auto-stop</div>
         </div>
@@ -163,18 +166,25 @@
       <!-- Schedules Table -->
       <section class="card">
         <div class="card-header">
-          <span class="card-title">Configured Schedules</span>
+          <div>
+            <span class="card-title">Configured Schedules</span>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Schedules run at most once per daily occurrence using the farm owner's configured timezone.</p>
+          </div>
+          <button onclick="loadSchedules()" class="btn btn-outline btn-sm" title="Refresh schedule statuses">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+            <span>Refresh</span>
+          </button>
         </div>
         <div class="table-responsive">
           <table class="table">
             <thead>
               <tr>
                 <th>Schedule Name</th>
-                <th>Target Farm</th>
+                <th>Farm &amp; Timezone</th>
                 <th>Daily Start Time</th>
                 <th>Target Moisture</th>
                 <th>Runtime Cap</th>
-                <th>Status</th>
+                <th>Execution &amp; Safety Status</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -230,35 +240,110 @@
 
   <script src="/js/api.js"></script>
   <script>
+    async function updateSchedulerStatus() {
+      try {
+        const res = await API.get('/api/schedules/scheduler-status');
+        const badge = document.getElementById('scheduler-badge');
+        if (res.is_running) {
+          badge.className = 'badge-state badge-live';
+          badge.textContent = `Scheduler: Active (${res.check_interval_seconds}s checks)`;
+        } else {
+          badge.className = 'badge-state';
+          badge.style.background = '#FEE2E2';
+          badge.style.color = '#991B1B';
+          badge.textContent = 'Scheduler: Paused';
+        }
+      } catch (e) {
+        // Fallback silently if offline
+      }
+    }
+
     async function loadSchedules() {
       try {
+        updateSchedulerStatus();
         const scheds = await API.get('/api/schedules');
         const tbody = document.getElementById('schedules-table-body');
-        if (scheds.length === 0) {
+        if (!scheds || scheds.length === 0) {
           tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">No schedules configured yet. Click "Add Schedule" to configure one.</td></tr>`;
           return;
         }
 
-        tbody.innerHTML = scheds.map(s => `
-          <tr>
-            <td>
-              <strong>${s.name}</strong>
-              ${s.notes ? `<div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">${s.notes}</div>` : ''}
-            </td>
-            <td>${s.farm_name || 'DHARAA Farm'}</td>
-            <td><strong style="color: var(--primary-green);">${s.start_time}</strong></td>
-            <td>${s.target_moisture}%</td>
-            <td>${Math.round(s.runtime_limit / 60)} mins (${s.runtime_limit}s)</td>
-            <td>
-              <span class="badge-state ${s.status === 'active' ? 'badge-live' : 'badge-neutral'}">${s.status}</span>
-            </td>
-            <td>
-              <button onclick="deleteSchedule(${s.id})" class="btn btn-outline btn-sm" style="color: var(--danger); border-color: #FECACA;">Delete</button>
-            </td>
-          </tr>
-        `).join('');
+        tbody.innerHTML = scheds.map(s => {
+          let statusBadge = '<span class="badge-state badge-neutral">Pending Occurrence</span>';
+          const lastStatus = (s.last_run_status || '').toLowerCase();
+
+          if (lastStatus.startsWith('executed')) {
+            statusBadge = `
+              <div style="display:inline-flex; flex-direction:column; gap:2px;">
+                <span class="badge-state badge-live" style="align-self:flex-start;">✓ Executed Today</span>
+                <span style="font-size:0.73rem; color:var(--text-muted);">${s.last_run_status}</span>
+                ${s.last_run_date ? `<span style="font-size:0.7rem; color:var(--text-muted);">Date: ${s.last_run_date}</span>` : ''}
+              </div>
+            `;
+          } else if (lastStatus.startsWith('skipped')) {
+            statusBadge = `
+              <div style="display:inline-flex; flex-direction:column; gap:2px;">
+                <span class="badge-state" style="background:#FEF3C7; color:#92400E; border:1px solid #FCD34D; align-self:flex-start;">⚠ Skipped</span>
+                <span style="font-size:0.73rem; color:#B45309;">${s.last_run_status.replace('skipped: ', '')}</span>
+                ${s.last_run_date ? `<span style="font-size:0.7rem; color:var(--text-muted);">Date: ${s.last_run_date}</span>` : ''}
+              </div>
+            `;
+          } else if (s.status !== 'active') {
+            statusBadge = '<span class="badge-state badge-neutral">Disabled</span>';
+          }
+
+          return `
+            <tr>
+              <td>
+                <strong>${s.name}</strong>
+                ${s.notes ? `<div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">${s.notes}</div>` : ''}
+              </td>
+              <td>
+                <div>${s.farm_name || 'DHARAA Farm'}</div>
+                <div style="font-size:0.72rem; color:var(--text-muted);">${s.user_timezone || 'Asia/Kolkata'}</div>
+              </td>
+              <td><strong style="color: var(--primary-green); font-size:1.05rem;">${s.start_time}</strong></td>
+              <td><strong>${s.target_moisture}%</strong></td>
+              <td>${Math.round(s.runtime_limit / 60)} mins (${s.runtime_limit}s)</td>
+              <td>${statusBadge}</td>
+              <td>
+                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                  <button onclick="runScheduleNow(${s.id})" class="btn btn-outline btn-sm" style="color:var(--primary-dark-green); border-color:#A7D7B5;" title="Test safety checks and trigger pump immediately">Run Now</button>
+                  <button onclick="rearmSchedule(${s.id})" class="btn btn-outline btn-sm" title="Clear today's run flag so it can execute again">Re-arm</button>
+                  <button onclick="deleteSchedule(${s.id})" class="btn btn-outline btn-sm" style="color: var(--danger); border-color: #FECACA;" title="Delete schedule">Delete</button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
       } catch (err) {
         showToast("Error loading schedules: " + err.message, "error");
+      }
+    }
+
+    async function runScheduleNow(id) {
+      try {
+        showToast("Evaluating pre-flight safety protocol...", "info");
+        const res = await API.post(`/api/schedules/${id}/run-now`, {});
+        if (res.success) {
+          showToast("Schedule executed: Pump ON command queued!", "success");
+        } else {
+          showToast(`Schedule skipped: ${res.status || res.message}`, "warning");
+        }
+        loadSchedules();
+      } catch (err) {
+        showToast(`Execution check halted: ${err.message}`, "warning");
+        loadSchedules();
+      }
+    }
+
+    async function rearmSchedule(id) {
+      try {
+        await API.put(`/api/schedules/${id}`, { reset_run_state: true });
+        showToast("Schedule re-armed for today's occurrence.", "info");
+        loadSchedules();
+      } catch (err) {
+        showToast("Failed to re-arm: " + err.message, "error");
       }
     }
 
@@ -299,7 +384,11 @@
       }
     });
 
-    document.addEventListener('DOMContentLoaded', loadSchedules);
+    document.addEventListener('DOMContentLoaded', () => {
+      loadSchedules();
+      // Auto-refresh schedules every 20s to reflect background scheduler updates
+      setInterval(loadSchedules, 20000);
+    });
   </script>
 </body>
 </html>

@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash
 DB_PATH = os.path.join(os.path.dirname(__file__), "dharaa.db")
 
 def get_db():
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=20.0)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
     return conn
@@ -13,6 +13,7 @@ def get_db():
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
+    cursor.execute("PRAGMA journal_mode = WAL")
 
     cursor.executescript("""
     CREATE TABLE IF NOT EXISTS users (
@@ -73,7 +74,10 @@ def init_db():
         target_moisture REAL DEFAULT 45.0,
         runtime_limit INTEGER DEFAULT 300,
         status TEXT DEFAULT 'active',
-        notes TEXT
+        notes TEXT,
+        last_run_date TEXT,
+        last_run_at TIMESTAMP,
+        last_run_status TEXT
     );
 
     CREATE TABLE IF NOT EXISTS irrigation_events (
@@ -107,6 +111,15 @@ def init_db():
         read_at TIMESTAMP
     );
     """)
+
+    # Ensure schedules table has new execution tracking columns
+    sched_cols = [c[1] for c in cursor.execute("PRAGMA table_info(schedules)").fetchall()]
+    if "last_run_date" not in sched_cols:
+        cursor.execute("ALTER TABLE schedules ADD COLUMN last_run_date TEXT")
+    if "last_run_at" not in sched_cols:
+        cursor.execute("ALTER TABLE schedules ADD COLUMN last_run_at TIMESTAMP")
+    if "last_run_status" not in sched_cols:
+        cursor.execute("ALTER TABLE schedules ADD COLUMN last_run_status TEXT")
 
     # Check if default user exists, if not seed initial demo data
     user = cursor.execute("SELECT id FROM users WHERE username = 'farmer'").fetchone()
