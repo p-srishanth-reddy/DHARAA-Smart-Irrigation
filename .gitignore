@@ -25,3 +25,5 @@ scratch/
 
 # Sensitive or large local database locks
 *.db-journal
+backend/dharaa.db-wal
+backend/dharaa.db-shm
