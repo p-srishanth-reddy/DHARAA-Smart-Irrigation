@@ -131,7 +131,7 @@
       <div class="topbar-right">
         <span class="device-status-pill online">
           <span class="status-dot"></span>
-          <span>Aggregated Telemetry DB</span>
+          <span id="analytics-farm-label">Selected Farm Data</span>
         </span>
       </div>
     </header>
@@ -221,22 +221,41 @@
 
   <script src="/js/api.js"></script>
   <script>
-    async function loadAnalytics() {
+    let moistureChart = null;
+    let runtimeChart = null;
+    let analyticsRequest = 0;
+
+    async function loadAnalytics(farmId = null) {
+      const request = ++analyticsRequest;
+      document.getElementById('analytics-farm-label').textContent = 'Loading farm data...';
+      document.getElementById('stat-readings').textContent = '--';
+      document.getElementById('stat-sessions').textContent = '--';
+      if (moistureChart) {
+        moistureChart.destroy();
+        moistureChart = null;
+      }
+      if (runtimeChart) {
+        runtimeChart.destroy();
+        runtimeChart = null;
+      }
       try {
-        const data = await API.get('/api/analytics/summary?farm_id=1');
+        const farm = await loadSelectedFarm(farmId);
+        const data = await API.get(`/api/analytics/summary?farm_id=${farm.id}`);
+        if (request !== analyticsRequest) return;
+        document.getElementById('analytics-farm-label').textContent = `Farm #${farm.id} · ${farm.name}`;
         document.getElementById('stat-readings').textContent = data.telemetry_stats.total_readings;
         document.getElementById('stat-sessions').textContent = data.total_irrigation_sessions;
 
         // 1. Daily Moisture Chart
         const mDates = data.daily_moisture_trend.map(d => d.date);
         const mAvgs = data.daily_moisture_trend.map(d => Math.round(d.avg_moisture * 10) / 10);
-        new Chart(document.getElementById('chart-daily-moisture'), {
+        moistureChart = new Chart(document.getElementById('chart-daily-moisture'), {
           type: 'bar',
           data: {
             labels: mDates.length ? mDates : ['No Data'],
             datasets: [{
               label: 'Avg Moisture (%)',
-              data: mAvgs.length ? mAvgs : [0],
+              data: mAvgs,
               backgroundColor: 'rgba(34, 164, 71, 0.25)',
               borderColor: '#22A447',
               borderWidth: 1.5,
@@ -257,13 +276,13 @@
         // 2. Daily Runtime Chart
         const rDates = data.daily_runtime_trend.map(d => d.date);
         const rMins = data.daily_runtime_trend.map(d => Math.round(d.total_runtime_minutes * 10) / 10);
-        new Chart(document.getElementById('chart-daily-runtime'), {
+        runtimeChart = new Chart(document.getElementById('chart-daily-runtime'), {
           type: 'line',
           data: {
             labels: rDates.length ? rDates : ['No Data'],
             datasets: [{
               label: 'Pump Runtime (Minutes)',
-              data: rMins.length ? rMins : [0],
+              data: rMins,
               borderColor: '#3B82F6',
               backgroundColor: 'rgba(59, 130, 246, 0.08)',
               fill: true,
@@ -285,11 +304,13 @@
         });
 
       } catch (err) {
+        if (request !== analyticsRequest) return;
         showToast("Error loading analytics: " + err.message, "error");
       }
     }
 
-    document.addEventListener('DOMContentLoaded', loadAnalytics);
+    FarmSelection.onChange(farmId => loadAnalytics(farmId));
+    document.addEventListener('DOMContentLoaded', () => loadAnalytics());
   </script>
 </body>
 </html>

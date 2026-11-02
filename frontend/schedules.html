@@ -258,10 +258,16 @@
       }
     }
 
-    async function loadSchedules() {
+    let schedulesRequest = 0;
+
+    async function loadSchedules(farmId = null) {
+      const request = ++schedulesRequest;
+      document.getElementById('schedules-table-body').innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">Loading selected farm schedules...</td></tr>';
       try {
         updateSchedulerStatus();
-        const scheds = await API.get('/api/schedules');
+        const farm = await loadSelectedFarm(farmId);
+        const scheds = await API.get(`/api/schedules?farm_id=${farm.id}`);
+        if (request !== schedulesRequest) return;
         const tbody = document.getElementById('schedules-table-body');
         if (!scheds || scheds.length === 0) {
           tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">No schedules configured yet. Click "Add Schedule" to configure one.</td></tr>`;
@@ -317,6 +323,7 @@
           `;
         }).join('');
       } catch (err) {
+        if (request !== schedulesRequest) return;
         showToast("Error loading schedules: " + err.message, "error");
       }
     }
@@ -368,8 +375,9 @@
     document.getElementById('form-new-sched').addEventListener('submit', async (e) => {
       e.preventDefault();
       try {
+        const farm = await loadSelectedFarm();
         await API.post('/api/schedules', {
-          farm_id: 1,
+          farm_id: farm.id,
           name: document.getElementById('sched-name').value,
           start_time: document.getElementById('sched-time').value,
           target_moisture: parseFloat(document.getElementById('sched-moist').value),
@@ -386,6 +394,7 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       loadSchedules();
+      FarmSelection.onChange(farmId => loadSchedules(farmId));
       // Auto-refresh schedules every 20s to reflect background scheduler updates
       setInterval(loadSchedules, 20000);
     });

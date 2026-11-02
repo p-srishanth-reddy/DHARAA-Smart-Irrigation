@@ -140,7 +140,7 @@
       <section class="page-header">
         <div>
           <h1 class="page-title">Farm Meteorological Outlook</h1>
-          <p class="page-subtitle">Coordinates: <strong id="weather-coords">17.3850° N, 78.4867° E</strong> | Sourced via Open-Meteo High-Resolution Model</p>
+          <p class="page-subtitle"><strong id="weather-farm-name">Selected farm</strong> · Coordinates: <strong id="weather-coords">Loading farm location...</strong> | Sourced via Open-Meteo High-Resolution Model</p>
         </div>
         <button id="btn-refresh-weather" class="btn btn-outline btn-sm">
           <span>🔄 Refresh Forecast</span>
@@ -229,10 +229,27 @@
   <script src="/js/charts.js"></script>
   <script>
     let weatherChart = null;
+    let weatherRequest = 0;
 
-    async function loadWeather() {
+    async function loadWeather(farmId = null) {
+      const request = ++weatherRequest;
+      document.getElementById('weather-farm-name').textContent = 'Selected farm';
+      document.getElementById('weather-coords').textContent = 'Loading forecast...';
+      document.getElementById('w-temp').innerHTML = '--<span class="card-unit">°C</span>';
+      document.getElementById('w-humidity').innerHTML = '--<span class="card-unit">%</span>';
+      document.getElementById('w-rain').innerHTML = '--<span class="card-unit">mm</span>';
+      document.getElementById('w-wind').innerHTML = '--<span class="card-unit">km/h</span>';
+      document.getElementById('weather-retrieval-pill').className = 'device-status-pill stale';
+      document.getElementById('weather-retrieval-text').textContent = 'Fetching Forecast...';
+      if (weatherChart) {
+        weatherChart.destroy();
+        weatherChart = null;
+      }
       try {
-        const data = await API.get('/api/weather?farm_id=1');
+        const farm = await loadSelectedFarm(farmId);
+        const data = await API.get(`/api/weather?farm_id=${farm.id}`);
+        if (request !== weatherRequest) return;
+        document.getElementById('weather-farm-name').textContent = `Farm #${farm.id} · ${farm.name}`;
         document.getElementById('weather-coords').textContent = `${data.latitude}° N, ${data.longitude}° E`;
 
         const pill = document.getElementById('weather-retrieval-pill');
@@ -246,14 +263,13 @@
         }
 
         const curr = data.current || {};
-        document.getElementById('w-temp').innerHTML = `${curr.temperature || '--'}<span class="card-unit">°C</span>`;
-        document.getElementById('w-humidity').innerHTML = `${curr.humidity || '--'}<span class="card-unit">%</span>`;
-        document.getElementById('w-rain').innerHTML = `${curr.precipitation || '0.0'}<span class="card-unit">mm</span>`;
-        document.getElementById('w-wind').innerHTML = `${curr.wind_speed || '--'}<span class="card-unit">km/h</span>`;
+        document.getElementById('w-temp').innerHTML = `${curr.temperature ?? '--'}<span class="card-unit">°C</span>`;
+        document.getElementById('w-humidity').innerHTML = `${curr.humidity ?? '--'}<span class="card-unit">%</span>`;
+        document.getElementById('w-rain').innerHTML = `${curr.precipitation ?? '0.0'}<span class="card-unit">mm</span>`;
+        document.getElementById('w-wind').innerHTML = `${curr.wind_speed ?? '--'}<span class="card-unit">km/h</span>`;
 
         // Render chart
         if (data.hourly) {
-          if (weatherChart) weatherChart.destroy();
           weatherChart = createWeatherForecastChart(
             'chart-weather-forecast',
             data.hourly.time,
@@ -262,12 +278,16 @@
           );
         }
       } catch (err) {
+        if (request !== weatherRequest) return;
+        document.getElementById('weather-retrieval-pill').className = 'device-status-pill offline';
+        document.getElementById('weather-retrieval-text').textContent = 'Forecast Unavailable';
         showToast("Weather fetch failed: " + err.message, "error");
       }
     }
 
-    document.getElementById('btn-refresh-weather').addEventListener('click', loadWeather);
-    document.addEventListener('DOMContentLoaded', loadWeather);
+    document.getElementById('btn-refresh-weather').addEventListener('click', () => loadWeather());
+    FarmSelection.onChange(farmId => loadWeather(farmId));
+    document.addEventListener('DOMContentLoaded', () => loadWeather());
   </script>
 </body>
 </html>

@@ -103,8 +103,10 @@ def get_latest_telemetry():
 
     if farm_id:
         dev = cursor.execute("SELECT id FROM devices WHERE farm_id = ? LIMIT 1", (farm_id,)).fetchone()
-        if dev:
-            device_id = dev["id"]
+        if not dev:
+            conn.close()
+            return jsonify({"error": "Device not found for farm"}), 404
+        device_id = dev["id"]
 
     device = cursor.execute("SELECT * FROM devices WHERE id = ?", (device_id,)).fetchone()
     if not device:

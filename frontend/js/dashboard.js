@@ -1,19 +1,22 @@
 // DHARAA Dashboard Orchestration Logic
 
-let currentFarmId = 1;
-let currentDeviceId = 1;
+let currentFarmId = null;
+let currentDeviceId = null;
 let telemetryTimer = null;
 let moistureChartInstance = null;
 let pumpRuntimeSeconds = 0;
 let pumpTimer = null;
+let farmSelectionVersion = 0;
 
 document.addEventListener("DOMContentLoaded", async () => {
-  await loadFarmsHeader();
-  await initDashboard();
+  const hasFarm = await loadFarmsHeader();
+  if (!hasFarm) return;
+
   setupEventListeners();
+  await refreshSelectedFarm();
 
   // Start continuous polling loop every 3 seconds
-  telemetryTimer = setInterval(pollTelemetry, 3000);
+  telemetryTimer = setInterval(() => pollTelemetry(), 3000);
 });
 
 async function loadFarmsHeader() {
@@ -21,33 +24,110 @@ async function loadFarmsHeader() {
     const farms = await API.get('/api/farms');
     const select = document.getElementById('farm-select');
     if (select && farms.length > 0) {
+      select.disabled = false;
       select.innerHTML = farms.map(f => `<option value="${f.id}">${f.name} (${f.crop})</option>`).join('');
-      currentFarmId = farms[0].id;
-      select.addEventListener('change', (e) => {
-        currentFarmId = parseInt(e.target.value);
-        pollTelemetry();
-        loadTelemetryHistory();
-        loadIrrigationEvents();
+      const requestedFarmId = new URLSearchParams(window.location.search).get('farm_id');
+      const activeFarm = FarmSelection.resolve(farms, requestedFarmId);
+      select.value = String(activeFarm.id);
+      updateFarmDetails(activeFarm);
+
+      const url = new URL(window.location.href);
+      if (url.searchParams.has('farm_id')) {
+        url.searchParams.delete('farm_id');
+        window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
+      }
+
+      select.addEventListener('change', event => {
+        FarmSelection.setId(event.target.value);
       });
+      FarmSelection.onChange(farmId => {
+        const farm = farms.find(item => item.id === farmId);
+        if (!farm || farm.id === currentFarmId) return;
+        select.value = String(farm.id);
+        updateFarmDetails(farm);
+        void refreshSelectedFarm();
+      });
+      currentFarmId = activeFarm.id;
+      return true;
     }
+    if (select) {
+      select.innerHTML = '<option value="">No farms available</option>';
+      select.disabled = true;
+    }
+    const subtitle = document.getElementById('farm-details');
+    if (subtitle) subtitle.textContent = 'No farms are registered. Add a farm to begin.';
+    return false;
   } catch (err) {
     console.error("Failed to load farms:", err);
+    return false;
   }
 }
 
-async function initDashboard() {
-  await pollTelemetry();
-  await loadTelemetryHistory();
-  await loadIrrigationEvents();
+function updateFarmDetails(farm) {
+  currentFarmId = farm.id;
+  const subtitle = document.getElementById('farm-details');
+  if (!subtitle) return;
+
+  const location = farm.location_hierarchy || farm.state_district || 'Location not specified';
+  const area = farm.area !== null && farm.area !== undefined
+    ? ` · ${farm.area} ${farm.area_unit || ''}`.trimEnd()
+    : '';
+  subtitle.textContent = `Farm #${farm.id} · ${farm.name} · ${location} · ${farm.crop}${area}`;
 }
 
-async function pollTelemetry() {
+async function refreshSelectedFarm() {
+  const version = ++farmSelectionVersion;
+  currentDeviceId = null;
+  clearFarmData();
+  await pollTelemetry(version);
+  if (version !== farmSelectionVersion) return;
+  await Promise.all([
+    loadTelemetryHistory(currentDeviceId, version),
+    loadIrrigationEvents(version)
+  ]);
+}
+
+function clearFarmData() {
+  const statusPill = document.getElementById('device-status-pill');
+  const statusText = document.getElementById('device-status-text');
+  const deviceName = document.getElementById('device-name-text');
+  if (statusPill) statusPill.className = 'device-status-pill stale';
+  if (statusText) statusText.textContent = 'Loading Farm Data...';
+  if (deviceName) deviceName.textContent = '--';
+
+  updateSensorCards({ telemetry: null, is_stale: true });
+  const moistureBar = document.getElementById('bar-moisture');
+  if (moistureBar) moistureBar.style.width = '0%';
+  updatePumpControl({});
+
+  const tableBody = document.getElementById('events-table-body');
+  if (tableBody) {
+    tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Loading farm events...</td></tr>';
+  }
+  if (moistureChartInstance) {
+    moistureChartInstance.destroy();
+    moistureChartInstance = null;
+  }
+  moistureChartInstance = createMoistureChart('chart-moisture', []);
+}
+
+async function pollTelemetry(version = farmSelectionVersion) {
+  const farmId = currentFarmId;
+  if (farmId === null) return;
+
   try {
-    const data = await API.get(`/api/telemetry/latest?farm_id=${currentFarmId}`);
+    const data = await API.get(`/api/telemetry/latest?farm_id=${farmId}`);
+    if (version !== farmSelectionVersion || farmId !== currentFarmId) return;
     updateDeviceStatus(data);
     updateSensorCards(data);
     updatePumpControl(data);
   } catch (err) {
+    if (version === farmSelectionVersion && farmId === currentFarmId) {
+      const pill = document.getElementById('device-status-pill');
+      const text = document.getElementById('device-status-text');
+      if (pill) pill.className = 'device-status-pill offline';
+      if (text) text.textContent = 'Telemetry Unavailable';
+    }
     console.warn("Telemetry poll error:", err);
   }
 }
@@ -131,6 +211,10 @@ function updateSensorCards(data) {
       rainBadge.className = 'badge-state badge-live';
       rainBadge.textContent = 'No Rain';
     }
+  } else {
+    rainVal.textContent = 'No Data';
+    rainBadge.className = 'badge-state badge-error';
+    rainBadge.textContent = 'Unavailable';
   }
 
   // 4. Flow Sensor
@@ -140,6 +224,8 @@ function updateSensorCards(data) {
     // YF-S201 calibrated calculation
     const litres = (pulses / 450.0).toFixed(2);
     flowVal.innerHTML = `${pulses} <span class="card-unit">pulses (~${litres} L)</span>`;
+  } else {
+    flowVal.textContent = 'No Data';
   }
 
   // 5. Update Rule Engine explanation
@@ -213,9 +299,11 @@ function updatePumpControl(data) {
   }
 }
 
-async function loadTelemetryHistory() {
+async function loadTelemetryHistory(deviceId = currentDeviceId, version = farmSelectionVersion) {
+  if (!deviceId) return;
   try {
-    const history = await API.get(`/api/telemetry/history?device_id=${currentDeviceId}&limit=30`);
+    const history = await API.get(`/api/telemetry/history?device_id=${deviceId}&limit=30`);
+    if (version !== farmSelectionVersion || deviceId !== currentDeviceId) return;
     if (moistureChartInstance) {
       moistureChartInstance.destroy();
     }
@@ -225,9 +313,12 @@ async function loadTelemetryHistory() {
   }
 }
 
-async function loadIrrigationEvents() {
+async function loadIrrigationEvents(version = farmSelectionVersion) {
+  const farmId = currentFarmId;
+  if (farmId === null) return;
   try {
-    const events = await API.get(`/api/irrigation/events?farm_id=${currentFarmId}&limit=5`);
+    const events = await API.get(`/api/irrigation/events?farm_id=${farmId}&limit=5`);
+    if (version !== farmSelectionVersion || farmId !== currentFarmId) return;
     const tableBody = document.getElementById('events-table-body');
     if (!tableBody) return;
 

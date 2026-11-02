@@ -10,24 +10,32 @@ def get_analytics_summary():
     conn = get_db()
     cursor = conn.cursor()
 
+    farm = cursor.execute("SELECT id FROM farms WHERE id = ?", (farm_id,)).fetchone()
+    if not farm:
+        conn.close()
+        return jsonify({"error": "Farm not found"}), 404
+
     # Find primary device for this farm
     dev = cursor.execute("SELECT id FROM devices WHERE farm_id = ? LIMIT 1", (farm_id,)).fetchone()
-    device_id = dev["id"] if dev else 1
+    device_id = dev["id"] if dev else None
 
     # 1. Total Telemetry readings recorded
-    telemetry_count = cursor.execute("""
-        SELECT COUNT(*) as count, MIN(timestamp) as first_seen, MAX(timestamp) as last_seen
-        FROM telemetry WHERE device_id = ?
-    """, (device_id,)).fetchone()
+    telemetry_count = None
+    daily_moisture = []
+    if device_id is not None:
+        telemetry_count = cursor.execute("""
+            SELECT COUNT(*) as count, MIN(timestamp) as first_seen, MAX(timestamp) as last_seen
+            FROM telemetry WHERE device_id = ?
+        """, (device_id,)).fetchone()
 
-    # 2. Daily average moisture over past 7 days
-    daily_moisture = cursor.execute("""
-        SELECT DATE(timestamp) as date, AVG(moisture) as avg_moisture, MIN(moisture) as min_moisture, MAX(moisture) as max_moisture
-        FROM telemetry
-        WHERE device_id = ? AND moisture IS NOT NULL
-        GROUP BY DATE(timestamp)
-        ORDER BY date DESC LIMIT 7
-    """, (device_id,)).fetchall()
+        # 2. Daily average moisture over past 7 days
+        daily_moisture = cursor.execute("""
+            SELECT DATE(timestamp) as date, AVG(moisture) as avg_moisture, MIN(moisture) as min_moisture, MAX(moisture) as max_moisture
+            FROM telemetry
+            WHERE device_id = ? AND moisture IS NOT NULL
+            GROUP BY DATE(timestamp)
+            ORDER BY date DESC LIMIT 7
+        """, (device_id,)).fetchall()
 
     # 3. Daily pump runtime (minutes) over past 7 days
     daily_runtime = cursor.execute("""

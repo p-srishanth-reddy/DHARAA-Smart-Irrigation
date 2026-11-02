@@ -55,6 +55,59 @@ const API = {
   }
 };
 
+const FarmSelection = {
+  storageKey: 'dharaa_selected_farm_id',
+  eventName: 'dharaa:farm-selection-change',
+
+  getId() {
+    const id = Number(localStorage.getItem(this.storageKey));
+    return Number.isSafeInteger(id) && id > 0 ? id : null;
+  },
+
+  setId(id, notify = true) {
+    const farmId = Number(id);
+    if (!Number.isSafeInteger(farmId) || farmId <= 0) {
+      throw new Error('A valid farm ID is required.');
+    }
+
+    const changed = this.getId() !== farmId;
+    localStorage.setItem(this.storageKey, String(farmId));
+    if (changed && notify) {
+      window.dispatchEvent(new CustomEvent(this.eventName, { detail: { farmId } }));
+    }
+  },
+
+  resolve(farms, preferredId = null) {
+    const preferredFarmId = Number(preferredId);
+    const preferredFarm = Number.isSafeInteger(preferredFarmId) && preferredFarmId > 0
+      ? farms.find(item => item.id === preferredFarmId)
+      : null;
+    const storedFarmId = this.getId();
+    const farm = preferredFarm
+      || farms.find(item => item.id === storedFarmId)
+      || farms[0]
+      || null;
+    if (farm) this.setId(farm.id, false);
+    return farm;
+  },
+
+  onChange(callback) {
+    window.addEventListener(this.eventName, event => callback(event.detail.farmId));
+    window.addEventListener('storage', event => {
+      if (event.key === this.storageKey && event.newValue) {
+        callback(Number(event.newValue));
+      }
+    });
+  }
+};
+
+async function loadSelectedFarm(preferredId = null) {
+  const farms = await API.get('/api/farms');
+  const farm = FarmSelection.resolve(farms, preferredId);
+  if (!farm) throw new Error('No farms are available. Add a farm before continuing.');
+  return farm;
+}
+
 // UI Notifications & Toasts
 function showToast(message, type = 'info') {
   let container = document.getElementById('toast-container');

@@ -385,35 +385,52 @@
       }
     });
 
-    async function loadIrrigationAdvisor() {
-      try {
-        const tele = await API.get('/api/telemetry/latest?farm_id=1');
-        const moisture = tele.telemetry ? tele.telemetry.moisture : 42.0;
+    let advisorRequest = 0;
 
-        const res = await API.post('/api/advisor/irrigation', {
-          moisture: moisture,
-          crop: 'Cotton',
-          temperature: 28.0,
-          rain_probability: 5
-        });
+    async function loadIrrigationAdvisor(farmId = null) {
+      const request = ++advisorRequest;
+      document.getElementById('advisor-headline').textContent = 'Loading selected farm advice...';
+      document.getElementById('advisor-runtime').textContent = '--';
+      document.getElementById('irrigation-urgency-badge').textContent = 'LOADING';
+      document.getElementById('advisor-points').innerHTML = '';
+      try {
+        const farm = await loadSelectedFarm(farmId);
+        const tele = await API.get(`/api/telemetry/latest?farm_id=${farm.id}`);
+        const reading = tele.telemetry;
+        const payload = {
+          moisture: reading ? reading.moisture : null,
+          crop: farm.crop
+        };
+        if (reading && reading.temperature !== null) payload.temperature = reading.temperature;
+        if (reading && reading.rain === 1) payload.rain_probability = 100;
+
+        const res = await API.post('/api/advisor/irrigation', payload);
+        if (request !== advisorRequest) return;
 
         document.getElementById('advisor-headline').textContent = res.headline;
-        document.getElementById('advisor-runtime').textContent = `${Math.round(res.recommended_runtime_seconds / 60)} minutes`;
+        document.getElementById('advisor-runtime').textContent = Number.isFinite(res.recommended_runtime_seconds)
+          ? `${Math.round(res.recommended_runtime_seconds / 60)} minutes`
+          : '--';
 
         const urgencyBadge = document.getElementById('irrigation-urgency-badge');
         urgencyBadge.textContent = `${res.urgency} URGENCY`;
         if (res.urgency === 'HIGH') urgencyBadge.className = 'badge-state badge-danger';
         else if (res.urgency === 'MODERATE') urgencyBadge.className = 'badge-state badge-warning';
+        else if (res.urgency === 'UNKNOWN') urgencyBadge.className = 'badge-state badge-neutral';
         else urgencyBadge.className = 'badge-state badge-live';
 
         const pointsEl = document.getElementById('advisor-points');
-        pointsEl.innerHTML = res.advice_points.map(pt => `<li>${pt}</li>`).join('');
+        pointsEl.innerHTML = (res.advice_points || res.advice || []).map(pt => `<li>${pt}</li>`).join('');
       } catch (err) {
+        if (request !== advisorRequest) return;
+        document.getElementById('advisor-headline').textContent = 'Farm advice unavailable';
+        document.getElementById('irrigation-urgency-badge').textContent = 'UNKNOWN URGENCY';
         console.warn("Irrigation advisor error:", err);
       }
     }
 
-    document.addEventListener('DOMContentLoaded', loadIrrigationAdvisor);
+    FarmSelection.onChange(farmId => loadIrrigationAdvisor(farmId));
+    document.addEventListener('DOMContentLoaded', () => loadIrrigationAdvisor());
   </script>
 </body>
 </html>

@@ -10,17 +10,17 @@ def get_weather():
     lat = request.args.get("lat", type=float)
     lon = request.args.get("lon", type=float)
 
-    if farm_id and (lat is None or lon is None):
+    if farm_id is not None:
         conn = get_db()
         cursor = conn.cursor()
         farm = cursor.execute("SELECT lat, lon, name, state_district FROM farms WHERE id = ?", (farm_id,)).fetchone()
         conn.close()
-        if farm and farm["lat"] is not None and farm["lon"] is not None:
-            lat = farm["lat"]
-            lon = farm["lon"]
-        else:
-            lat = 17.3850
-            lon = 78.4867
+        if not farm:
+            return jsonify({"error": "Farm not found"}), 404
+        if farm["lat"] is None or farm["lon"] is None:
+            return jsonify({"error": "Farm location is not available"}), 400
+        lat = farm["lat"]
+        lon = farm["lon"]
 
     if lat is None or lon is None:
         lat = 17.3850
