@@ -45,6 +45,13 @@ async function loadFarmsHeader() {
         if (!farm || farm.id === currentFarmId) return;
         select.value = String(farm.id);
         updateFarmDetails(farm);
+
+        // Sync active farm selection with backend for telemetry attribution
+        API.post('/api/devices/set_active_farm', {
+          device_id: currentDeviceId || 1, // Fallback to default device
+          farm_id: farmId
+        }).catch(err => console.error("Failed to sync active farm:", err));
+
         void refreshSelectedFarm();
       });
       currentFarmId = activeFarm.id;

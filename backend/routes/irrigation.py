@@ -100,6 +100,21 @@ def poll_commands():
         conn.close()
         return jsonify({"has_command": False, "command": None})
 
+    # Enforce command expiry (e.g., 60 seconds)
+    from backend.services.irrigation_service import COMMAND_EXPIRY_SECONDS
+    created_at_str = cmd["created_at"]
+    try:
+        from datetime import datetime
+        created_at = datetime.strptime(created_at_str, "%Y-%m-%d %H:%M:%S")
+        age = (datetime.utcnow() - created_at).total_seconds()
+        if age > COMMAND_EXPIRY_SECONDS:
+            cursor.execute("UPDATE commands SET status = 'expired' WHERE id = ?", (cmd["id"],))
+            conn.commit()
+            conn.close()
+            return jsonify({"has_command": False, "command": None, "status": "expired"})
+    except Exception as e:
+        print(f"Command expiry check error: {e}")
+
     cmd_dict = dict(cmd)
     cursor.execute("""
         UPDATE commands
@@ -110,6 +125,7 @@ def poll_commands():
     conn.close()
 
     return jsonify({"has_command": True, "command": cmd_dict})
+
 
 @irrigation_bp.route("/api/commands/ack", methods=["POST"])
 def acknowledge_command():

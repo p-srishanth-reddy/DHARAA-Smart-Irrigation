@@ -68,14 +68,35 @@ def evaluate_irrigation_policy(farm_id: int, device_id: int, current_moisture: f
         """, (farm_id,)).fetchone()
 
         if last_event and last_event["ended_at"]:
-            # Check elapsed seconds
-            last_ended_sql = cursor.execute("SELECT strftime('%s', ?) - strftime('%s', 'now')", (last_event["ended_at"],)).fetchone()
-            # If within cooldown period
-            # We can also compute via python time
-            pass
+            try:
+                # SQLite timestamp 'YYYY-MM-DD HH:MM:SS'
+                from datetime import datetime
+                ended_at = datetime.strptime(last_event["ended_at"], "%Y-%m-%d %H:%M:%S")
+                elapsed = (datetime.utcnow() - ended_at).total_seconds()
+                if elapsed < DEFAULT_COOLDOWN_SECONDS:
+                    remaining = int(DEFAULT_COOLDOWN_SECONDS - elapsed)
+                    conn.close()
+                    return {"action": "none", "reason": f"Pump cooldown active ({remaining}s remaining)"}
+            except Exception as e:
+                print(f"Cooldown calculation error: {e}")
+
+        # Check for manual override: if the last command was OFF or EMERGENCY_STOP,
+        # inhibit auto-start until moisture reaches recovery target.
+        last_cmd = cursor.execute("""
+            SELECT type FROM commands
+            WHERE device_id = ?
+            ORDER BY created_at DESC LIMIT 1
+        """, (device_id,)).fetchone()
+
+        if last_cmd and last_cmd["type"] in ["OFF", "EMERGENCY_STOP"]:
+            # If we are in a manual OFF state, only allow restart if moisture is very low
+            # or we provide a re-arm. For now, we strictly inhibit auto-start.
+            conn.close()
+            return {"action": "none", "reason": "Manual override active: Pump locked OFF"}
 
         # Check start threshold: Moisture < 35%
         if current_moisture < DEFAULT_MOISTURE_START_THRESHOLD:
+
             # Queue turn ON
             cmd_id = queue_pump_command(device_id, "ON", "Auto: Moisture crossed below threshold")
             start_irrigation_event(farm_id, trigger_source="auto_moisture")

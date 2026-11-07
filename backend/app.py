@@ -14,6 +14,7 @@ from backend.routes.weather import weather_bp
 from backend.routes.advisor import advisor_bp
 from backend.routes.analytics import analytics_bp
 from backend.routes.notifications import notifications_bp
+from backend.routes.devices import devices_bp
 
 FRONTEND_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend"))
 
@@ -38,6 +39,7 @@ def create_app():
     app.register_blueprint(advisor_bp)
     app.register_blueprint(analytics_bp)
     app.register_blueprint(notifications_bp)
+    app.register_blueprint(devices_bp)
 
     # Frontend Page Serving Routes
     @app.route("/")

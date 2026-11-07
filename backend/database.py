@@ -51,6 +51,7 @@ def init_db():
     CREATE TABLE IF NOT EXISTS devices (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         farm_id INTEGER NOT NULL REFERENCES farms(id) ON DELETE CASCADE,
+        active_farm_id INTEGER REFERENCES farms(id) ON DELETE SET NULL,
         name TEXT DEFAULT 'DHARAA-ESP32-Node-1',
         key_hash TEXT NOT NULL,
         last_seen TIMESTAMP,

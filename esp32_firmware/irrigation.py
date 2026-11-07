@@ -18,6 +18,7 @@ class IrrigationController:
         print(f"[Irrigation] Executing received command #{cmd_id}: {cmd_type}")
 
         if cmd_type == "EMERGENCY_STOP":
+            self.mode = "MANUAL"  # Lock out auto-mode
             self.safety.trigger_emergency_stop()
             return True
 
@@ -30,14 +31,19 @@ class IrrigationController:
             return True
 
         elif cmd_type == "ON":
+            # Manual ON should explicitly set mode to MANUAL to prevent
+            # the auto-logic from fighting if moisture is actually high
+            self.mode = "MANUAL"
             ok, msg = self.safety.start_pump("COMMAND_MANUAL_ON")
             return ok
 
         elif cmd_type == "OFF":
+            self.mode = "MANUAL" # Enter manual mode to inhibit auto-restart
             self.safety.force_pump_off("COMMAND_MANUAL_OFF")
             return True
 
         return False
+
 
     def check_automated_rules(self, moisture, rain_detected, sensor_status):
         """

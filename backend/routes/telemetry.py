@@ -44,7 +44,12 @@ def post_telemetry():
         conn.close()
         return jsonify({"error": f"Device {device_id} not registered"}), 404
 
-    farm_id = device["farm_id"]
+    # Attribution Logic: Use active_farm_id if set, otherwise fallback to static farm_id
+    farm_id = device["active_farm_id"] or device["farm_id"]
+
+    if not farm_id:
+        conn.close()
+        return jsonify({"error": "No farm attributed to this device"}), 422
 
     # Update device online state and last seen
     cursor.execute("""
@@ -74,6 +79,9 @@ def post_telemetry():
     # Check if there are any immediate pending commands for the device
     conn = get_db()
     cursor = conn.cursor()
+
+    # Enforce command expiry for the telemetry-injected command as well
+    from backend.services.irrigation_service import COMMAND_EXPIRY_SECONDS
     pending_cmd = cursor.execute("""
         SELECT * FROM commands
         WHERE device_id = ? AND status = 'pending'
@@ -82,10 +90,25 @@ def post_telemetry():
 
     pending_cmd_dict = None
     if pending_cmd:
-        pending_cmd_dict = dict(pending_cmd)
-        cursor.execute("UPDATE commands SET status = 'delivered', delivered_at = CURRENT_TIMESTAMP WHERE id = ?", (pending_cmd["id"],))
-        conn.commit()
+        try:
+            from datetime import datetime
+            created_at = datetime.strptime(pending_cmd["created_at"], "%Y-%m-%d %H:%M:%S")
+            age = (datetime.utcnow() - created_at).total_seconds()
+            if age > COMMAND_EXPIRY_SECONDS:
+                cursor.execute("UPDATE commands SET status = 'expired' WHERE id = ?", (pending_cmd["id"],))
+                conn.commit()
+            else:
+                pending_cmd_dict = dict(pending_cmd)
+                cursor.execute("UPDATE commands SET status = 'delivered', delivered_at = CURRENT_TIMESTAMP WHERE id = ?", (pending_cmd["id"],))
+                conn.commit()
+        except Exception as e:
+            print(f"Telemetry command expiry check error: {e}")
+            # Fallback: just deliver it if we can't parse time
+            pending_cmd_dict = dict(pending_cmd)
+            cursor.execute("UPDATE commands SET status = 'delivered', delivered_at = CURRENT_TIMESTAMP WHERE id = ?", (pending_cmd["id"],))
+            conn.commit()
     conn.close()
+
 
     return jsonify({
         "status": "success",
