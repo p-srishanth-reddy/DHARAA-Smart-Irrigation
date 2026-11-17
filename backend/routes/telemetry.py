@@ -1,12 +1,13 @@
 from flask import Blueprint, request, jsonify
 from datetime import datetime, timezone
+import json
 import time
 from backend.database import get_db
-from backend.services.irrigation_service import evaluate_irrigation_policy
+from backend.services.irrigation_service import evaluate_irrigation_policy, queue_pump_command
 
 telemetry_bp = Blueprint("telemetry", __name__)
 
-STALE_THRESHOLD_SECONDS = 120  # Mark stale if no telemetry for >2 minutes
+STALE_THRESHOLD_SECONDS = 15  # Mark stale if no telemetry for >15 seconds
 
 @telemetry_bp.route("/api/telemetry", methods=["POST"])
 def post_telemetry():
@@ -65,6 +66,83 @@ def post_telemetry():
     """, (device_id, moisture, temperature, humidity, rain, flow_pulses, pump_state, sensor_status))
     conn.commit()
     conn.close()
+
+    # -----------------------------------------------------------------------
+    # AI FLOW QUANTITY CHECK (additive — does not interfere with existing policy)
+    # Checks if an active AI-guided event has reached its target pulse count.
+    # -----------------------------------------------------------------------
+    ai_flow_action = None
+    if pump_state == 1 and flow_pulses and flow_pulses > 0:
+        try:
+            conn_ai   = get_db()
+            cursor_ai = conn_ai.cursor()
+            active_ai_event = cursor_ai.execute(
+                "SELECT * FROM irrigation_events"
+                " WHERE farm_id = ? AND status = 'running'"
+                " AND ai_prediction_id IS NOT NULL"
+                " AND target_pulses IS NOT NULL AND target_pulses > 0"
+                " ORDER BY started_at DESC LIMIT 1",
+                (farm_id,)
+            ).fetchone()
+
+            if active_ai_event:
+                current_total = (active_ai_event["actual_pulses"] or 0) + flow_pulses
+                target_p      = active_ai_event["target_pulses"]
+                cursor_ai.execute(
+                    "UPDATE irrigation_events SET actual_pulses = ? WHERE id = ?",
+                    (current_total, active_ai_event["id"])
+                )
+                conn_ai.commit()
+
+                if current_total >= target_p:
+                    actual_ml = round(current_total * (1000.0 / 450.0), 1)
+                    queue_pump_command(
+                        device_id, "OFF",
+                        json.dumps({"reason": "AI target quantity reached",
+                                    "actual_ml": actual_ml,
+                                    "actual_pulses": current_total})
+                    )
+                    cursor_ai.execute(
+                        "UPDATE irrigation_events"
+                        " SET status = 'completed', ended_at = CURRENT_TIMESTAMP,"
+                        "     stop_reason = 'ai_target_quantity_reached',"
+                        "     actual_water_ml = ?, actual_pulses = ?,"
+                        "     estimated_litres = ?"
+                        " WHERE id = ?",
+                        (actual_ml, current_total,
+                         round(actual_ml / 1000.0, 3), active_ai_event["id"])
+                    )
+                    conn_ai.commit()
+                    ai_flow_action = {
+                        "action": "STOP",
+                        "reason": "AI target quantity reached",
+                        "actual_water_ml": actual_ml,
+                        "actual_pulses": current_total,
+                        "target_pulses": target_p,
+                    }
+                    try:
+                        from backend.services.water_model_trainer import record_irrigation_outcome
+                        record_irrigation_outcome(
+                            farm_id=farm_id,
+                            irrigation_event_id=active_ai_event["id"],
+                            initial_moisture=None,
+                            final_moisture=moisture,
+                            predicted_water_ml=active_ai_event["target_water_ml"],
+                            actual_water_ml=actual_ml,
+                            predicted_duration_s=None,
+                            actual_duration_s=None,
+                            temperature=temperature,
+                            humidity=humidity,
+                            rain=(1 if rain == 1 else 0),
+                            stop_reason="ai_target_quantity_reached",
+                        )
+                    except Exception as le:
+                        print(f"[Telemetry] Learning record save error: {le}")
+
+            conn_ai.close()
+        except Exception as ai_err:
+            print(f"[Telemetry] AI flow check error (non-fatal): {ai_err}")
+    # -----------------------------------------------------------------------
 
     # Evaluate automated irrigation policy with safety pre-flight checks
     policy_result = evaluate_irrigation_policy(
@@ -176,11 +254,16 @@ def get_latest_telemetry():
         pass
 
     # Distinct requested vs reported pump state
-    requested_state = "OFF"
-    if latest_cmd and latest_cmd["type"] in ["ON", "OFF", "EMERGENCY_STOP"]:
-        requested_state = latest_cmd["type"]
-
+    # Only treat a command as "requested" if it is still in-flight (pending or delivered).
+    # Once the ESP32 acknowledges it (completed/rejected/expired), use the reported hardware state.
     reported_state = "ON" if reading_dict.get("pump_state") == 1 else "OFF"
+
+    requested_state = reported_state  # Default: mirror hardware truth
+    if latest_cmd:
+        cmd_type   = latest_cmd["type"]
+        cmd_status = latest_cmd["status"]
+        if cmd_type in ["ON", "OFF", "EMERGENCY_STOP"] and cmd_status in ("pending", "delivered"):
+            requested_state = cmd_type   # Command in-flight: show what was commanded
 
     return jsonify({
         "device": dict(device),

@@ -15,8 +15,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   setupEventListeners();
   await refreshSelectedFarm();
 
-  // Start continuous polling loop every 3 seconds
-  telemetryTimer = setInterval(() => pollTelemetry(), 3000);
+  // Start continuous polling loop every 1.5 seconds for near-real-time updates
+  telemetryTimer = setInterval(() => pollTelemetry(), 1500);
 });
 
 async function loadFarmsHeader() {
@@ -262,32 +262,79 @@ function updateRuleSummary(t) {
 }
 
 function updatePumpControl(data) {
-  const reqEl = document.getElementById('state-requested');
-  const repEl = document.getElementById('state-reported');
+  const reqEl     = document.getElementById('state-requested');
+  const repEl     = document.getElementById('state-reported');
+  const repMirror = document.getElementById('state-reported-mirror');
   const runtimeEl = document.getElementById('pump-runtime');
+  const btnOn     = document.getElementById('btn-pump-on');
+  const btnOff    = document.getElementById('btn-pump-off');
 
-  const ctrl = data.pump_control || {};
-  const requested = ctrl.requested_state || 'OFF';
-  const reported = ctrl.reported_state || 'OFF';
+  const ctrl     = data.pump_control || {};
+  const lastCmd  = ctrl.last_command || {};
+  const reported = ctrl.reported_state || 'OFF';   // Ground truth: what ESP32 last reported
 
+  // -------------------------------------------------------------------------
+  // Determine effective displayed state.
+  // "Requested State" = what the backend last commanded.
+  // If a command is pending/delivered (ESP32 hasn't ACK'd yet), show it.
+  // If the last command is completed/acknowledged, trust the reported state.
+  // -------------------------------------------------------------------------
+  const cmdType   = (lastCmd.type   || '').toUpperCase();
+  const cmdStatus = (lastCmd.status || '').toLowerCase();
+  const isPending = cmdStatus === 'pending' || cmdStatus === 'delivered';
+
+  let requested;
+  if (isPending && cmdType) {
+    // Command in-flight — show what was commanded
+    requested = cmdType;   // 'ON', 'OFF', or 'EMERGENCY_STOP'
+  } else {
+    // No pending command → effective state = what the hardware reports
+    requested = reported;
+  }
+
+  // The single authoritative pump state to drive all UI from is the REPORTED state.
+  // Requested is shown as a secondary hint only.
+  const pumpIsOn = (reported === 'ON');
+
+  // Update top metric card ("Pump Operational State")
+  if (repEl) {
+    repEl.textContent  = reported;
+    repEl.style.color  = pumpIsOn ? 'var(--success)' : 'var(--text-muted)';
+    repEl.style.fontWeight = '700';
+  }
+
+  // Update pump indicator box
   if (reqEl) {
     reqEl.textContent = requested;
-    reqEl.className = `indicator-state ${requested === 'ON' ? 'state-on' : (requested === 'EMERGENCY_STOP' ? 'state-emergency' : 'state-off')}`;
+    reqEl.className   = `indicator-state ${
+      requested === 'ON' ? 'state-on' :
+      requested === 'EMERGENCY_STOP' ? 'state-emergency' : 'state-off'
+    }`;
   }
-
-  if (repEl) {
-    repEl.textContent = reported;
-    repEl.style.color = reported === 'ON' ? 'var(--success)' : 'var(--text-muted)';
-  }
-
-  const repMirror = document.getElementById('state-reported-mirror');
   if (repMirror) {
     repMirror.textContent = reported;
-    repMirror.className = `indicator-state ${reported === 'ON' ? 'state-on' : 'state-off'}`;
+    repMirror.className   = `indicator-state ${pumpIsOn ? 'state-on' : 'state-off'}`;
   }
 
-  // Manage runtime timer
-  if (reported === 'ON') {
+  // -------------------------------------------------------------------------
+  // Button state: disable whichever button matches current reported state.
+  // This prevents double-commands and gives clear visual feedback.
+  // -------------------------------------------------------------------------
+  if (btnOn) {
+    btnOn.disabled = pumpIsOn;   // Disable START when pump is already ON
+    btnOn.style.opacity = pumpIsOn ? '0.5' : '1';
+    btnOn.title = pumpIsOn ? 'Pump is already running' : 'Turn Pump ON with pre-flight safety check';
+  }
+  if (btnOff) {
+    btnOff.disabled = !pumpIsOn;   // Disable STOP when pump is already OFF
+    btnOff.style.opacity = !pumpIsOn ? '0.5' : '1';
+    btnOff.title = !pumpIsOn ? 'Pump is already stopped' : 'Turn Pump OFF';
+  }
+
+  // -------------------------------------------------------------------------
+  // Runtime timer — driven exclusively by REPORTED state (hardware truth)
+  // -------------------------------------------------------------------------
+  if (pumpIsOn) {
     if (!pumpTimer) {
       pumpTimer = setInterval(() => {
         pumpRuntimeSeconds++;
@@ -353,6 +400,12 @@ function setupEventListeners() {
   const btnOn = document.getElementById('btn-pump-on');
   if (btnOn) {
     btnOn.addEventListener('click', async () => {
+      if (btnOn.disabled) return;
+      // Optimistic UI: show pending state immediately
+      btnOn.disabled  = true;
+      btnOn.style.opacity = '0.5';
+      const reqEl = document.getElementById('state-requested');
+      if (reqEl) { reqEl.textContent = 'ON'; reqEl.className = 'indicator-state state-on'; }
       try {
         await API.post('/api/irrigation/command', {
           device_id: currentDeviceId,
@@ -360,9 +413,14 @@ function setupEventListeners() {
           reason: 'Manual activation from dashboard'
         });
         showToast("Pump ON command queued to ESP32", "success");
-        pollTelemetry();
+        // Poll immediately so UI reflects the new command status
+        setTimeout(() => pollTelemetry(), 300);
       } catch (err) {
         showToast(`Failed: ${err.message}`, "error");
+        // Revert optimistic state on error
+        btnOn.disabled = false;
+        btnOn.style.opacity = '1';
+        if (reqEl) { reqEl.textContent = 'OFF'; reqEl.className = 'indicator-state state-off'; }
       }
     });
   }
@@ -371,6 +429,12 @@ function setupEventListeners() {
   const btnOff = document.getElementById('btn-pump-off');
   if (btnOff) {
     btnOff.addEventListener('click', async () => {
+      if (btnOff.disabled) return;
+      // Optimistic UI: show pending state immediately
+      btnOff.disabled = true;
+      btnOff.style.opacity = '0.5';
+      const reqEl = document.getElementById('state-requested');
+      if (reqEl) { reqEl.textContent = 'OFF'; reqEl.className = 'indicator-state state-off'; }
       try {
         await API.post('/api/irrigation/command', {
           device_id: currentDeviceId,
@@ -378,9 +442,12 @@ function setupEventListeners() {
           reason: 'Manual deactivation from dashboard'
         });
         showToast("Pump OFF command queued to ESP32", "info");
-        pollTelemetry();
+        setTimeout(() => pollTelemetry(), 300);
       } catch (err) {
         showToast(`Failed: ${err.message}`, "error");
+        btnOff.disabled = false;
+        btnOff.style.opacity = '1';
+        if (reqEl) { reqEl.textContent = 'ON'; reqEl.className = 'indicator-state state-on'; }
       }
     });
   }
@@ -397,7 +464,9 @@ function setupEventListeners() {
             reason: 'EMERGENCY STOP BUTTON CLICKED BY USER'
           });
           showToast("EMERGENCY STOP EXECUTED!", "error");
-          pollTelemetry();
+          const reqEl = document.getElementById('state-requested');
+          if (reqEl) { reqEl.textContent = 'EMERGENCY_STOP'; reqEl.className = 'indicator-state state-emergency'; }
+          setTimeout(() => pollTelemetry(), 300);
         } catch (err) {
           showToast(`Emergency stop failed: ${err.message}`, "error");
         }

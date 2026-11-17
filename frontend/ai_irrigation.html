@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DHARAA — AI Irrigation Intelligence</title>
+  <meta name="description" content="AI-based intelligent water requirement prediction, quantity-based pump control, and adaptive learning for DHARAA Smart Irrigation.">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    /* ---- AI Irrigation Page Specific Styles ---- */
+    .ai-hero {
+      background: linear-gradient(135deg, #166534 0%, #22A447 60%, #4CAF50 100%);
+      border-radius: var(--radius-lg);
+      padding: 28px 32px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 4px;
+    }
+    .ai-hero-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .ai-hero-sub {
+      font-size: 0.88rem;
+      opacity: 0.88;
+      margin-top: 4px;
+    }
+    .ai-hero-badge {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 20px;
+      padding: 6px 16px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    /* Live telemetry context row */
+    .ctx-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .ctx-pill {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--pale-green);
+      border: 1px solid #D1E7D5;
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+    .ctx-pill .ctx-label { color: var(--text-secondary); font-size: 0.74rem; }
+    /* Recommendation box */
+    .recommendation-box {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 20px;
+      border-radius: var(--radius-md);
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+    .rec-yes { background: var(--success-bg); border: 2px solid var(--success-border); color: var(--success); }
+    .rec-no  { background: #F0FDF4;           border: 2px solid #BBF7D0;              color: #15803D; }
+    .rec-icon { font-size: 1.5rem; }
+    /* Metric grid for prediction values */
+    .pred-metric-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 16px 0;
+    }
+    .pred-metric-box {
+      background: var(--pale-green);
+      border: 1px solid #D5E8D8;
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      text-align: center;
+    }
+    .pred-metric-label {
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .pred-metric-value {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+    }
+    /* Explanation box */
+    .explanation-box {
+      background: #F8FAFF;
+      border: 1px solid #BFDBFE;
+      border-left: 3px solid #3B82F6;
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      font-size: 0.86rem;
+      color: var(--text-primary);
+      line-height: 1.6;
+      margin-top: 12px;
+    }
+    /* Model status grid */
+    .model-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+    .model-stat {
+      background: var(--pale-green);
+      border: 1px solid #D5E8D8;
+      border-radius: var(--radius-md);
+      padding: 14px;
+      text-align: center;
+    }
+    .model-stat-label { font-size: 0.72rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600; margin-bottom: 6px; }
+    .model-stat-val   { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); }
+    /* Active session panel */
+    .active-session-panel {
+      background: var(--success-bg);
+      border: 2px solid var(--success-border);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      display: none;
+    }
+    /* History table */
+    .diff-positive { color: #3B82F6; }
+    .diff-negative { color: #22A447; }
+    @media (max-width: 900px) {
+      .pred-metric-grid { grid-template-columns: repeat(2, 1fr); }
+      .model-grid        { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .pred-metric-grid { grid-template-columns: 1fr; }
+      .model-grid        { grid-template-columns: 1fr; }
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <div class="sidebar-overlay"></div>
+
+  <!-- Left Sidebar -->
+  <aside class="sidebar">
+    <div class="brand-container">
+      <div class="brand-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-title">DHARAA</div>
+        <div class="brand-subtitle">Smart Irrigation System</div>
+      </div>
+    </div>
+
+    <ul class="nav-menu">
+      <li><a href="/" class="nav-link">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect></svg>
+        <span>Dashboard</span></a></li>
+      <li><a href="/farms" class="nav-link">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        <span>Farms</span></a></li>
+      <li><a href="/schedules" class="nav-link">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        <span>Schedules</span></a></li>
+      <li><a href="/weather-view" class="nav-link">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg>
+        <span>Weather</span></a></li>
+      <li><a href="/advisor-view" class="nav-link">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+        <span>AI Advisor</span></a></li>
+      <li><a href="/ai-irrigation" class="nav-link active">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path><circle cx="12" cy="14" r="2"></circle><line x1="12" y1="2" x2="12" y2="6"></line></svg>
+        <span>AI Irrigation</span></a></li>
+      <li><a href="/analytics-view" class="nav-link">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+        <span>Analytics</span></a></li>
+      <li><a href="/profile-view" class="nav-link">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        <span>Profile</span></a></li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <div class="user-mini-card">
+        <div class="user-avatar">SR</div>
+        <div>
+          <div class="user-name">Srishanth Reddy</div>
+          <div class="user-role">Farm Operator</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Wrapper -->
+  <div class="main-wrapper">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button id="btn-mobile-menu" class="btn-mobile-menu" aria-label="Toggle navigation menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+        <span class="topbar-page-title">AI Irrigation Intelligence</span>
+      </div>
+      <div class="topbar-right">
+        <div class="farm-selector-wrapper">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary-green)" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+          <select id="ai-farm-select"><option value="">Loading…</option></select>
+        </div>
+      </div>
+    </header>
+
+    <main class="content-container">
+
+      <!-- Hero Banner -->
+      <div class="ai-hero">
+        <div>
+          <div class="ai-hero-title">🌱 AI Water Requirement Intelligence</div>
+          <div class="ai-hero-sub">FAO-56 baseline estimator · Adaptive RandomForest model · Flow-based quantity stopping</div>
+        </div>
+        <div class="ai-hero-badge">🔬 Scientific Agronomic Engine</div>
+      </div>
+
+      <!-- Status bar -->
+      <div id="ai-status-bar" style="font-size:0.85rem;padding:8px 14px;background:var(--info-bg);border:1px solid var(--info-border);border-radius:var(--radius-md);color:var(--info);">
+        Loading farm data…
+      </div>
+
+      <!-- Live Telemetry Context -->
+      <section class="card">
+        <div class="card-header">
+          <span class="card-title">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--primary-green)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            Live Field Context
+          </span>
+          <span id="ctx-stale-badge" class="badge-state badge-neutral">Checking…</span>
+        </div>
+        <div class="ctx-row">
+          <div class="ctx-pill"><span class="ctx-label">Moisture</span><strong id="ctx-moisture">--</strong></div>
+          <div class="ctx-pill"><span class="ctx-label">Temp</span><strong id="ctx-temperature">--</strong></div>
+          <div class="ctx-pill"><span class="ctx-label">Humidity</span><strong id="ctx-humidity">--</strong></div>
+          <div class="ctx-pill"><span class="ctx-label">Rain</span><strong id="ctx-rain">--</strong></div>
+          <div class="ctx-pill"><span class="ctx-label">Pump</span><strong id="ctx-pump">--</strong></div>
+        </div>
+      </section>
+
+      <!-- Prediction & Control -->
+      <section class="grid-2">
+
+        <!-- Left: Prediction Panel -->
+        <div class="card" style="border-top: 3px solid var(--primary-green);">
+          <div class="card-header">
+            <span class="card-title" style="color:var(--primary-dark-green);">
+              🔮 AI Water Prediction Engine
+            </span>
+            <span class="badge-state badge-neutral" id="pred-model-badge">FAO-56 Baseline</span>
+          </div>
+
+          <p style="font-size:0.83rem;color:var(--text-secondary);margin-bottom:16px;">
+            Click below to generate a water requirement prediction based on live sensor data,
+            soil properties, crop evapotranspiration, and weather forecast.
+          </p>
+
+          <button id="btn-ai-predict" class="btn btn-primary" style="width:100%;justify-content:center;gap:8px;">
+            🔮 Generate AI Prediction
+          </button>
+
+          <!-- Prediction Result (hidden until populated) -->
+          <div id="prediction-result-panel" style="display:none;margin-top:20px;">
+
+            <div id="pred-recommend-box" class="recommendation-box">
+              <!-- filled by JS -->
+            </div>
+
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
+              <span style="font-size:0.8rem;color:var(--text-secondary);">Priority:</span>
+              <span id="pred-priority" class="badge-state badge-neutral">LOW</span>
+              <span id="pred-weather-adj" class="badge-state badge-info" style="display:none;">none</span>
+            </div>
+
+            <div class="pred-metric-grid">
+              <div class="pred-metric-box">
+                <div class="pred-metric-label">💧 Water Required</div>
+                <div class="pred-metric-value" id="pred-water-ml">--</div>
+              </div>
+              <div class="pred-metric-box">
+                <div class="pred-metric-label">⏱ Est. Duration</div>
+                <div class="pred-metric-value" id="pred-duration">--</div>
+              </div>
+              <div class="pred-metric-box">
+                <div class="pred-metric-label">📡 Target Pulses</div>
+                <div class="pred-metric-value" id="pred-pulses">--</div>
+              </div>
+            </div>
+
+            <!-- Context sub-row -->
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+              <div class="ctx-pill"><span class="ctx-label">Crop</span><strong id="pred-ctx-crop">--</strong></div>
+              <div class="ctx-pill"><span class="ctx-label">Soil</span><strong id="pred-ctx-soil">--</strong></div>
+              <div class="ctx-pill"><span class="ctx-label">Field Capacity</span><strong id="pred-ctx-fc">--</strong></div>
+              <div class="ctx-pill"><span class="ctx-label">Rain Prob</span><strong id="pred-ctx-rain-prob">--</strong></div>
+            </div>
+
+            <div style="font-size:0.76rem;color:var(--text-muted);margin-bottom:6px;">
+              Estimator: <strong id="pred-model">FAO-56 Baseline</strong>
+            </div>
+
+            <div class="explanation-box" id="pred-explanation">--</div>
+
+            <button id="btn-ai-start" class="btn btn-primary" style="width:100%;margin-top:14px;display:none;justify-content:center;gap:8px;background:var(--primary-dark-green);">
+              💧 Start AI Irrigation
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Active Session + Safety -->
+        <div style="display:flex;flex-direction:column;gap:16px;">
+
+          <!-- Active Session -->
+          <div class="card active-session-panel" id="active-session-panel">
+            <div class="card-header">
+              <span class="card-title" style="color:var(--success);">✅ AI Session Active</span>
+              <span class="badge-state badge-live">Running</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:4px;">
+              <div class="pred-metric-box">
+                <div class="pred-metric-label">Event ID</div>
+                <div class="pred-metric-value" id="active-event-id">--</div>
+              </div>
+              <div class="pred-metric-box">
+                <div class="pred-metric-label">Target Volume</div>
+                <div class="pred-metric-value" id="active-target-ml">--</div>
+              </div>
+              <div class="pred-metric-box">
+                <div class="pred-metric-label">Target Pulses</div>
+                <div class="pred-metric-value" id="active-target-pulse">--</div>
+              </div>
+            </div>
+            <p style="font-size:0.78rem;color:var(--text-secondary);margin-top:10px;">
+              The pump will automatically stop when the target water volume is reached via the flow sensor, or when the 5-minute safety timer fires — whichever comes first.
+            </p>
+          </div>
+
+          <!-- Safety Card -->
+          <div class="card" style="border-left: 3px solid var(--warning);">
+            <div class="card-header">
+              <span class="card-title">🛡 Safety Guarantees</span>
+              <span class="badge-state badge-warning">Always Active</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:0.83rem;color:var(--text-secondary);">
+              <div>✅ Live rain sensor inhibits all irrigation</div>
+              <div>✅ Sensor fault → pump OFF immediately</div>
+              <div>✅ Max 300s runtime enforced on hardware</div>
+              <div>✅ 10-min cooldown between sessions</div>
+              <div>✅ Emergency stop overrides all AI commands</div>
+              <div>✅ Flow sensor failure → time-based fallback</div>
+              <div>✅ Max 200 L per AI cycle (safety cap)</div>
+            </div>
+          </div>
+
+          <!-- Methodology Card -->
+          <div class="card" style="border-left: 3px solid #3B82F6;">
+            <div class="card-header">
+              <span class="card-title" style="color:#2563EB;">📐 Prediction Methodology</span>
+            </div>
+            <div style="font-size:0.82rem;color:var(--text-secondary);line-height:1.7;">
+              <strong>Phase 1 (Active):</strong> FAO-56 Baseline — water deficit fill + 6h ETc (Hargreaves ET₀ × Kc).<br>
+              <strong>Phase 2 (Auto-activates at 30 records):</strong> RandomForest Regressor trained on actual irrigation outcomes.<br>
+              <strong>Flow Formula:</strong> Target Pulses = Water (ml) ÷ 2.22 ml/pulse (450 p/L · YF-S201).<br>
+              <strong>Weather:</strong> Rain forecast &gt;70% → postpone. 40–70% → reduce quantity.
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Analytics Charts -->
+      <section class="card">
+        <div class="card-header">
+          <span class="card-title">📊 AI Irrigation Analytics</span>
+          <span class="badge-state badge-neutral">Last 15 Cycles</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;">
+          <div>
+            <div style="font-size:0.8rem;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">Predicted vs Actual Water</div>
+            <div style="height:200px;position:relative;"><canvas id="chart-water-comparison"></canvas></div>
+          </div>
+          <div>
+            <div style="font-size:0.8rem;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">Water Consumption Over Time</div>
+            <div style="height:200px;position:relative;"><canvas id="chart-water-timeline"></canvas></div>
+          </div>
+          <div>
+            <div style="font-size:0.8rem;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">Soil Moisture Before & After</div>
+            <div style="height:200px;position:relative;"><canvas id="chart-moisture-before-after"></canvas></div>
+          </div>
+        </div>
+        <p id="charts-empty-msg" style="text-align:center;color:var(--text-muted);font-size:0.84rem;margin-top:12px;">
+          Charts will populate as AI irrigation cycles are completed.
+        </p>
+      </section>
+
+      <!-- Model Status -->
+      <section class="card">
+        <div class="card-header">
+          <span class="card-title">🧠 Adaptive Model Status</span>
+          <button id="btn-train-model" class="btn btn-outline btn-sm" disabled>🧠 Train Model</button>
+        </div>
+
+        <div class="model-grid">
+          <div class="model-stat">
+            <div class="model-stat-label">Active Estimator</div>
+            <div class="model-stat-val" id="model-estimator">📐 Baseline</div>
+          </div>
+          <div class="model-stat">
+            <div class="model-stat-label">Model Version</div>
+            <div class="model-stat-val" id="model-version">baseline_v1</div>
+          </div>
+          <div class="model-stat">
+            <div class="model-stat-label">Learning Records</div>
+            <div class="model-stat-val" id="model-records">0 / 30</div>
+          </div>
+          <div class="model-stat">
+            <div class="model-stat-label">Flow Calibration</div>
+            <div class="model-stat-val" id="model-flow-cal">2.22 ml/pulse</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px;">
+          <div class="model-stat">
+            <div class="model-stat-label">MAE (Test)</div>
+            <div class="model-stat-val" id="model-mae">--</div>
+          </div>
+          <div class="model-stat">
+            <div class="model-stat-label">R² Score</div>
+            <div class="model-stat-val" id="model-r2">--</div>
+          </div>
+          <div class="model-stat">
+            <div class="model-stat-label">Last Trained</div>
+            <div class="model-stat-val" id="model-trained-at" style="font-size:0.85rem;">Not trained yet</div>
+          </div>
+        </div>
+
+        <p id="train-info" style="margin-top:14px;font-size:0.83rem;color:var(--text-secondary);">
+          Collecting irrigation data for model training…
+        </p>
+      </section>
+
+      <!-- AI Session History Table -->
+      <section class="card">
+        <div class="card-header">
+          <span class="card-title">🕒 AI Irrigation History</span>
+          <span class="badge-state badge-neutral">Last 15 Sessions</span>
+        </div>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Moisture Before</th>
+                <th>Moisture After</th>
+                <th>Predicted</th>
+                <th>Actual</th>
+                <th>Difference</th>
+                <th>Stop Reason</th>
+                <th>Valid</th>
+              </tr>
+            </thead>
+            <tbody id="ai-history-tbody">
+              <tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:24px;">No AI irrigation cycles recorded yet.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/charts.js"></script>
+  <script src="/js/ai_irrigation.js"></script>
+</body>
+</html>

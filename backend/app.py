@@ -15,6 +15,7 @@ from backend.routes.advisor import advisor_bp
 from backend.routes.analytics import analytics_bp
 from backend.routes.notifications import notifications_bp
 from backend.routes.devices import devices_bp
+from backend.routes.ai_irrigation import ai_irrigation_bp
 
 FRONTEND_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend"))
 
@@ -40,6 +41,7 @@ def create_app():
     app.register_blueprint(analytics_bp)
     app.register_blueprint(notifications_bp)
     app.register_blueprint(devices_bp)
+    app.register_blueprint(ai_irrigation_bp)
 
     # Frontend Page Serving Routes
     @app.route("/")
@@ -71,6 +73,10 @@ def create_app():
     def serve_profile():
         return send_from_directory(FRONTEND_DIR, "profile.html")
 
+    @app.route("/ai-irrigation")
+    def serve_ai_irrigation():
+        return send_from_directory(FRONTEND_DIR, "ai_irrigation.html")
+
     @app.route("/<path:filename>")
     def serve_static(filename):
         if os.path.exists(os.path.join(FRONTEND_DIR, filename)):
@@ -92,7 +98,9 @@ def create_app():
                 "/api/telemetry", "/api/telemetry/latest", "/api/telemetry/history",
                 "/api/farms", "/api/schedules", "/api/irrigation/command",
                 "/api/irrigation/events", "/api/weather", "/api/advisor/crop",
-                "/api/advisor/irrigation", "/api/analytics/summary", "/api/notifications"
+                "/api/advisor/irrigation", "/api/analytics/summary", "/api/notifications",
+                "/api/ai-irrigation/predict", "/api/ai-irrigation/start",
+                "/api/ai-irrigation/history", "/api/ai-irrigation/model-status"
             ]
         })
 

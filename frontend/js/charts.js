@@ -116,3 +116,161 @@ function createWeatherForecastChart(canvasId, times, temps, rainProbs) {
     }
   });
 }
+
+// ==========================================================================
+// AI Irrigation Charts (New — do not modify existing chart functions above)
+// ==========================================================================
+
+/**
+ * Predicted vs Actual Water Comparison — Grouped Bar Chart
+ * data: array of { label, predicted_ml, actual_ml }
+ */
+function createWaterComparisonChart(canvasId, data) {
+  const ctx = document.getElementById(canvasId);
+  if (!ctx) return null;
+
+  const labels    = data.map((d, i) => d.label || `Session ${i + 1}`);
+  const predicted = data.map(d => d.predicted_ml != null ? +(d.predicted_ml / 1000).toFixed(2) : null);
+  const actual    = data.map(d => d.actual_ml    != null ? +(d.actual_ml    / 1000).toFixed(2) : null);
+
+  return new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Predicted (L)',
+          data: predicted,
+          backgroundColor: 'rgba(59, 130, 246, 0.65)',
+          borderColor: '#3B82F6',
+          borderWidth: 1,
+          borderRadius: 4,
+        },
+        {
+          label: 'Actual (L)',
+          data: actual,
+          backgroundColor: 'rgba(34, 164, 71, 0.65)',
+          borderColor: '#22A447',
+          borderWidth: 1,
+          borderRadius: 4,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top' },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.dataset.label}: ${ctx.raw} L`
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: { color: '#F3F4F6' },
+          ticks: { callback: v => v + ' L' }
+        },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+/**
+ * Water Consumption Timeline — Line Chart
+ * data: array of { label, actual_ml }
+ */
+function createWaterTimelineChart(canvasId, data) {
+  const ctx = document.getElementById(canvasId);
+  if (!ctx) return null;
+
+  const labels  = data.map((d, i) => d.label || `S${i + 1}`);
+  const volumes = data.map(d => d.actual_ml != null ? +(d.actual_ml / 1000).toFixed(2) : null);
+
+  return new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Water Used (L)',
+        data: volumes,
+        borderColor: '#22A447',
+        backgroundColor: 'rgba(34, 164, 71, 0.08)',
+        borderWidth: 2,
+        fill: true,
+        tension: 0.35,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        pointBackgroundColor: '#22A447',
+        spanGaps: true,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: { color: '#F3F4F6' },
+          ticks: { callback: v => v + ' L' }
+        },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+/**
+ * Soil Moisture Before & After Irrigation — Grouped Bar Chart
+ * data: array of { label, initial_moisture, final_moisture }
+ */
+function createMoistureBeforeAfterChart(canvasId, data) {
+  const ctx = document.getElementById(canvasId);
+  if (!ctx) return null;
+
+  const labels  = data.map((d, i) => d.label || `S${i + 1}`);
+  const before  = data.map(d => d.initial_moisture);
+  const after   = data.map(d => d.final_moisture);
+
+  return new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Moisture Before (%)',
+          data: before,
+          backgroundColor: 'rgba(245, 158, 11, 0.65)',
+          borderColor: '#F59E0B',
+          borderWidth: 1,
+          borderRadius: 4,
+        },
+        {
+          label: 'Moisture After (%)',
+          data: after,
+          backgroundColor: 'rgba(34, 164, 71, 0.65)',
+          borderColor: '#22A447',
+          borderWidth: 1,
+          borderRadius: 4,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { position: 'top' } },
+      scales: {
+        y: {
+          min: 0, max: 100,
+          grid: { color: '#F3F4F6' },
+          ticks: { callback: v => v + '%' }
+        },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}

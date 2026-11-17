@@ -189,6 +189,86 @@ def init_db():
             VALUES (?, 'Welcome to DHARAA Smart Irrigation System! Hardware node registered and ready.', 'info')
         """, (user_id,))
 
+    # =========================================================================
+    # AI Water Prediction Tables (Additive — never modifies existing tables)
+    # =========================================================================
+
+    cursor.executescript("""
+    -- Stores every AI water requirement prediction made
+    CREATE TABLE IF NOT EXISTS ai_predictions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        farm_id INTEGER NOT NULL REFERENCES farms(id) ON DELETE CASCADE,
+        device_id INTEGER REFERENCES devices(id) ON DELETE SET NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        moisture REAL,
+        temperature REAL,
+        humidity REAL,
+        rain INTEGER,
+        crop TEXT,
+        soil_type TEXT,
+        weather_rain_prob REAL,
+        weather_precip_mm REAL,
+        prev_irrigation_duration_s REAL,
+        prev_water_ml REAL,
+        elapsed_since_prev_s REAL,
+        recommended_irrigate INTEGER DEFAULT 0,
+        predicted_water_ml REAL,
+        predicted_duration_s REAL,
+        priority TEXT DEFAULT 'LOW',
+        explanation TEXT,
+        model_version TEXT DEFAULT 'baseline_v1',
+        estimator_type TEXT DEFAULT 'baseline'
+    );
+
+    -- Records actual outcomes of each AI-triggered irrigation session for learning
+    CREATE TABLE IF NOT EXISTS irrigation_learning_records (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        farm_id INTEGER NOT NULL REFERENCES farms(id) ON DELETE CASCADE,
+        irrigation_event_id INTEGER REFERENCES irrigation_events(id) ON DELETE SET NULL,
+        started_at TIMESTAMP,
+        ended_at TIMESTAMP,
+        initial_moisture REAL,
+        final_moisture REAL,
+        temperature REAL,
+        humidity REAL,
+        rain INTEGER DEFAULT 0,
+        predicted_water_ml REAL,
+        actual_water_ml REAL,
+        predicted_duration_s REAL,
+        actual_duration_s REAL,
+        crop TEXT,
+        soil_type TEXT,
+        stop_reason TEXT,
+        is_valid INTEGER DEFAULT 1,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+    -- Tracks trained water model versions and performance metrics
+    CREATE TABLE IF NOT EXISTS water_model_versions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        version TEXT NOT NULL,
+        trained_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        training_samples INTEGER DEFAULT 0,
+        mae_ml REAL,
+        r2_score REAL,
+        is_active INTEGER DEFAULT 0,
+        notes TEXT
+    );
+    """)
+
+    # Additive columns on irrigation_events for AI quantity targeting
+    irr_cols = [c[1] for c in cursor.execute("PRAGMA table_info(irrigation_events)").fetchall()]
+    if "ai_prediction_id" not in irr_cols:
+        cursor.execute("ALTER TABLE irrigation_events ADD COLUMN ai_prediction_id INTEGER")
+    if "target_water_ml" not in irr_cols:
+        cursor.execute("ALTER TABLE irrigation_events ADD COLUMN target_water_ml REAL")
+    if "target_pulses" not in irr_cols:
+        cursor.execute("ALTER TABLE irrigation_events ADD COLUMN target_pulses INTEGER")
+    if "actual_water_ml" not in irr_cols:
+        cursor.execute("ALTER TABLE irrigation_events ADD COLUMN actual_water_ml REAL")
+    if "actual_pulses" not in irr_cols:
+        cursor.execute("ALTER TABLE irrigation_events ADD COLUMN actual_pulses INTEGER")
+
     conn.commit()
     conn.close()
 

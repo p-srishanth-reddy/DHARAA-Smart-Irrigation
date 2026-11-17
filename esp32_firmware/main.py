@@ -1,4 +1,7 @@
 # DHARAA Smart Irrigation System - MicroPython Firmware Entry Point
+# Enhanced with AI quantity-based pump stopping via FlowTracker.
+# All existing behaviour is fully preserved.
+
 import time
 import config
 from sensors import SensorManager
@@ -10,17 +13,18 @@ from irrigation import IrrigationController
 def main():
     print("=" * 50)
     print("      DHARAA SMART IRRIGATION SYSTEM      ")
-    print("           ESP32 MicroPython v1.0         ")
+    print("           ESP32 MicroPython v1.1         ")
+    print("       + AI Quantity Targeting Module      ")
     print("=" * 50)
 
     # 1. Initialize Safety Subsystem (Guarantees Pump is OFF at startup)
     safety = SafetyManager()
     print("[INIT] Pump safety initialized. Pump is OFF.")
 
-    # 2. Initialize Sensors & Irrigation Controller
-    sensors = SensorManager()
+    # 2. Initialize Sensors & Irrigation Controller (now includes FlowTracker)
+    sensors    = SensorManager()
     controller = IrrigationController(safety)
-    api = DHARAAApiClient()
+    api        = DHARAAApiClient()
 
     # 3. Connect to Wi-Fi
     wifi = WiFiManager()
@@ -34,7 +38,10 @@ def main():
             now = time.time()
 
             # Local Runtime Safety Watchdog: Must execute every loop tick!
-            safety.check_runtime_watchdog()
+            watchdog_fired = safety.check_runtime_watchdog()
+            if watchdog_fired:
+                # Watchdog stopped the pump — end flow session cleanly
+                controller.on_pump_stopped()
 
             # Ensure Wi-Fi link is alive
             wifi.ensure_connected()
@@ -42,7 +49,7 @@ def main():
             # 1. Poll for any pending commands from Backend / Dashboard
             cmd = api.poll_command()
             if cmd:
-                cmd_id = cmd.get("id")
+                cmd_id  = cmd.get("id")
                 success = controller.execute_command(cmd)
                 api.acknowledge_command(
                     command_id=cmd_id,
@@ -53,38 +60,54 @@ def main():
             # 2. Sample Sensors
             moisture, m_status = sensors.read_moisture()
             temp, hum, dht_status = sensors.read_dht22()
-            rain = sensors.read_rain()
-            flow_pulses = sensors.get_and_reset_flow_pulses()
+            rain       = sensors.read_rain()
+            # get_and_reset_flow_pulses() returns interval delta for telemetry
+            interval_pulses = sensors.get_and_reset_flow_pulses()
+
+            # 3. AI Quantity-Based Stopping (uses session accumulator, not interval pulses)
+            #    If pump is ON with a target, check whether it has been reached.
+            if safety.pump_state == 1 and interval_pulses > 0:
+                target_hit = controller.check_quantity_target(interval_pulses)
+                if target_hit:
+                    # Report stop via next telemetry; api.acknowledge not needed here
+                    print("[MAIN] Pump stopped: AI quantity target reached.")
 
             # Overall sensor status
             sensor_status = "OK"
             if m_status != "OK" or dht_status != "OK":
                 sensor_status = f"{m_status}|{dht_status}"
 
-            # 3. Local Auto Hysteresis & Rain Invalidation
+            # 4. Local Auto Hysteresis & Rain Invalidation
             controller.check_automated_rules(moisture, (rain == 1), sensor_status)
 
-            # 4. Transmit Telemetry at defined intervals
+            # 5. Transmit Telemetry at defined intervals
             if (now - last_telemetry_time) >= config.TELEMETRY_INTERVAL_SECONDS:
                 resp = api.post_telemetry(
                     moisture=moisture,
                     temperature=temp,
                     humidity=hum,
                     rain=rain,
-                    flow_pulses=flow_pulses,
+                    flow_pulses=interval_pulses,
                     pump_state=safety.pump_state,
                     sensor_status=sensor_status
                 )
                 if resp:
-                    # If backend returned an immediate pending command in telemetry response
+                    # Backend may return a pending command inline with telemetry response
                     pending_cmd = resp.get("pending_command")
                     if pending_cmd:
-                        controller.execute_command(pending_cmd)
+                        success = controller.execute_command(pending_cmd)
                         api.acknowledge_command(
                             command_id=pending_cmd.get("id"),
-                            status="completed",
+                            status="completed" if success else "rejected",
                             reported_pump_state=safety.pump_state
                         )
+
+                    # Backend signals that AI target was reached (server-side check)
+                    ai_action = resp.get("ai_flow_action")
+                    if ai_action and ai_action.get("action") == "STOP":
+                        if safety.pump_state == 1:
+                            controller.flow.end_session()
+                            safety.force_pump_off("BACKEND_AI_TARGET_CONFIRMED")
 
                 last_telemetry_time = now
 
@@ -94,6 +117,7 @@ def main():
         except Exception as e:
             print("[EXCEPTION in main loop]:", e)
             # Local safety rule: on critical unhandled exception, force pump OFF
+            controller.on_pump_stopped()
             safety.force_pump_off("CRITICAL_UNHANDLED_EXCEPTION")
             time.sleep(5)
 
